@@ -9,7 +9,7 @@
 ## Этап 0. Подготовка и документация ✅
 - [x] Создать репозиторий и базовую структуру.
 - [x] Заполнить `docs/`.
-- [ ] Создать GitHub-репозиторий и сделать первый push (см. [`13-development-guide.md`](13-development-guide.md:1)).
+- [x] Создать GitHub-репозиторий и сделать первый push (см. [`13-development-guide.md`](13-development-guide.md:1)). Репозиторий: https://github.com/makoevvv/local_music
 - [ ] Установить инструменты на сервере (Docker Desktop, brew, git, ffmpeg).
 
 **DoD:** документация в `docs/` отражает MVP, репозиторий на GitHub, у владельца есть локальный clone.
