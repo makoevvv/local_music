@@ -1,0 +1,66 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node / Web
+node_modules/
+dist/
+build/
+.next/
+.parcel-cache/
+*.log
+
+# iOS / Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.xcworkspace/xcuserdata/
+
+# Android
+.gradle/
+local.properties
+*.iml
+captures/
+
+# Docker
+*.pid
+
+# Media / storage (НЕ коммитим аудио)
+storage/
+media/
+data/
+*.mp3
+*.m4a
+*.flac
+*.opus
+*.wav
+
+# DB
+*.sqlite
+*.sqlite3
+*.db
