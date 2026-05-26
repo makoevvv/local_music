@@ -37,6 +37,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-music}:${POSTGRES_PASSWORD:-change-me-db}@postgres:5432/${POSTGRES_DB:-local_music}
     ports:
       - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ../data/storage:/data/storage
     depends_on:
       postgres:
         condition: service_healthy

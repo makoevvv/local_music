@@ -87,13 +87,16 @@ pytest
 
 # запуск локально (без Docker)
 uvicorn app.main:app --reload --port 8000
+
+# импорт локального аудиофайла в каталог (этап 3+)
+python -m app.cli import-track --file /path/to/track.mp3 --title "Title" --artist "Artist" --user-id <uuid>
 ```
 
 ### Web
 ```bash
 cd web
 pnpm install
-pnpm dev          # http://localhost:5173
+pnpm dev          # http://localhost:3000
 pnpm build
 pnpm typecheck
 ```

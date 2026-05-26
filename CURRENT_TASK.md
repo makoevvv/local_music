@@ -79,5 +79,9 @@
 ## 📝 Лог работы по задаче
 
 - Этап 2 заархивирован: [`docs/tasks-archive/2026-05-28-stage-2-auth.md`](docs/tasks-archive/2026-05-28-stage-2-auth.md:1). PR [#2](https://github.com/makoevvv/local_music/pull/2) смержен.
+- Backend: модели каталога, миграция `20260529_0003` + seed genres/languages, storage, API tracks/playlists/reference, CORS, CLI `import-track`, интеграционные тесты `test_catalog.py`.
+- Web: `web/` — Vite + React + TS + Tailwind, страницы Login/Catalog/Track/Playlists, плеер с очередью, лайки, добавление в плейлист.
+- Docker: volume `../data/storage:/data/storage` для backend.
+- Проверки: `ruff`, `mypy` — OK; `pnpm build` — OK; локальный `pytest` требует Postgres с `music:music` (как в CI) или Docker Compose.
 
 ---

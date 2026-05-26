@@ -35,4 +35,4 @@ def require_database(database_ready: bool, request: pytest.FixtureRequest) -> No
         pytest.skip("Database migrations unavailable")
 
 
-pytest_plugins = ["tests.conftest_db"]
+pytest_plugins = ["tests.conftest_db", "tests.conftest_auth"]
