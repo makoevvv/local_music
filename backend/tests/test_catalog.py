@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.services.catalog import CatalogService
-from tests.test_auth_master import login
+from tests.conftest_auth import login
 
 
 @pytest.fixture
