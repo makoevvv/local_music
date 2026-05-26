@@ -41,6 +41,13 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     reset_master.add_argument("--password-stdin", action="store_true")
 
+    import_track = subparsers.add_parser("import-track", help="Import local audio file into catalog")
+    import_track.add_argument("--file", required=True)
+    import_track.add_argument("--title", required=True)
+    import_track.add_argument("--artist", required=True)
+    import_track.add_argument("--album", default=None)
+    import_track.add_argument("--user-id", required=True)
+
     return parser
 
 
@@ -137,6 +144,33 @@ async def _cmd_reset_master_password(args: argparse.Namespace) -> int:
     return 0
 
 
+async def _cmd_import_track(args: argparse.Namespace) -> int:
+    import uuid
+    from pathlib import Path
+
+    from app.models.catalog import Track
+    from app.services.catalog import CatalogService
+
+    source = Path(args.file)
+    if not source.exists():
+        print(f"File not found: {source}", file=sys.stderr)
+        return 1
+    user_id = uuid.UUID(args.user_id)
+
+    async def run(session: AsyncSession) -> Track:
+        return await CatalogService(session).import_local_track(
+            source_file=source,
+            title=args.title,
+            artist_name=args.artist,
+            album_title=args.album,
+            added_by_user_id=user_id,
+        )
+
+    track: Track = await _with_session(run)
+    print(f"Track imported: {track.title} ({track.id})")
+    return 0
+
+
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
@@ -147,6 +181,8 @@ def main() -> None:
         raise SystemExit(asyncio.run(_cmd_create_invite(args)))
     if args.command == "reset-master-password":
         raise SystemExit(asyncio.run(_cmd_reset_master_password(args)))
+    if args.command == "import-track":
+        raise SystemExit(asyncio.run(_cmd_import_track(args)))
 
     parser.print_help()
     raise SystemExit(1)

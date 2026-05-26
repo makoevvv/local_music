@@ -77,6 +77,9 @@ class AuthService:
         await self._users.add(user)
         if invite is not None:
             invite.used_by_user_id = user.id
+        from app.services.catalog import CatalogService
+
+        await CatalogService(self._session).ensure_favourite_playlist(user.id)
         await self._session.commit()
         await self._session.refresh(user)
         return UserPublic.model_validate(user)
@@ -192,6 +195,9 @@ class AdminService:
             target_kind="user",
             target_id=str(user.id),
         )
+        from app.services.catalog import CatalogService
+
+        await CatalogService(self._session).ensure_favourite_playlist(user.id)
         await self._session.commit()
         await self._session.refresh(user)
         return UserPublic.model_validate(user)

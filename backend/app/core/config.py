@@ -18,6 +18,14 @@ class Settings(BaseSettings):
     database_url: str
     redis_url: str
 
+    storage_local_path: str = "/data/storage"
+
+    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
     jwt_secret: str
     jwt_alg: str = "HS256"
     jwt_access_ttl_min: int = 60
