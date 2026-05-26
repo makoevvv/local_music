@@ -1,9 +1,11 @@
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.api.health import router
 
 
+@pytest.mark.no_db
 def test_health_returns_ok() -> None:
     app = FastAPI()
     app.include_router(router)

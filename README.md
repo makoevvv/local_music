@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🧭 Текущий статус
 
-Этап: **2. Auth + master-аккаунт** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:34). Этап 1 закрыт (PR [#1](https://github.com/makoevvv/local_music/pull/1)).
+Этап: **2. Auth** — реализован в ветке `stage/2-auth` (ожидает PR). Следующий: Этап 3 — каталог.
 
 ## ⚖️ Лицензия и оговорка
 

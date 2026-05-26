@@ -6,10 +6,13 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alembic==1.14.0",
+    "argon2-cffi==23.1.0",
     "asyncpg==0.30.0",
+    "email-validator==2.2.0",
     "fastapi==0.115.6",
     "httpx==0.28.1",
     "pydantic-settings==2.7.0",
+    "PyJWT==2.10.1",
     "redis==5.2.1",
     "sqlalchemy[asyncio]==2.0.36",
     "uvicorn[standard]==0.34.0",
@@ -38,6 +41,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
 
 [tool.black]
 line-length = 100
@@ -56,6 +60,10 @@ module = ["app.services.*"]
 strict = true
 
 [[tool.mypy.overrides]]
+module = ["app.core.security"]
+disable_error_code = ["call-arg"]
+
+[[tool.mypy.overrides]]
 module = ["tests.*"]
 disallow_untyped_defs = false
 
@@ -63,3 +71,6 @@ disallow_untyped_defs = false
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+markers = [
+    "no_db: tests that do not require database migrations",
+]

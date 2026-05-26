@@ -5,7 +5,9 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from app.api.health import router as health_router
+from app.api.v1.router import router as api_v1_router
 from app.core.database import engine
+from app.core.exceptions import register_exception_handlers
 from app.core.redis import close_redis, init_redis
 
 
@@ -20,4 +22,6 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="Local Music API", lifespan=lifespan)
+register_exception_handlers(app)
 app.include_router(health_router)
+app.include_router(api_v1_router, prefix="/api/v1")
