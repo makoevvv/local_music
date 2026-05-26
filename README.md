@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🧭 Текущий статус
 
-Этап: **1. Скелет backend + Docker** — реализован в ветке `stage/1-backend-skeleton` (ожидает PR). Следующий: Этап 2 — Auth.
+Этап: **2. Auth + master-аккаунт** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:34). Этап 1 закрыт (PR [#1](https://github.com/makoevvv/local_music/pull/1)).
 
 ## ⚖️ Лицензия и оговорка
 

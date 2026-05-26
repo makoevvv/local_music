@@ -16,7 +16,7 @@
 
 ---
 
-## Этап 1. Скелет backend + Docker
+## Этап 1. Скелет backend + Docker ✅
 - [x] Создать структуру `backend/` (см. [`02-architecture.md`](02-architecture.md:1) §2.1).
 - [x] `pyproject.toml`, `ruff`, `black`, `mypy`, `pytest`.
 - [x] `app/main.py` — FastAPI с health-check.

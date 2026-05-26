@@ -16,126 +16,69 @@
 
 ## 🎯 Что нужно сделать
 
-<!--
-Краткая формулировка задачи в одном-двух предложениях.
-Если задач несколько — пронумеруй их.
-Если оставить пустым — агент уточнит у разработчика.
--->
-
-Этап 1 из [`docs/12-roadmap.md`](docs/12-roadmap.md:19) — скелет backend на FastAPI, Docker-инфраструктура и базовый CI.
+Этап 2 из [`docs/12-roadmap.md`](docs/12-roadmap.md:34) — Auth, master-аккаунт, invite-регистрация, JWT и admin-эндпоинты.
 
 ---
 
 ## 🤔 Зачем
 
-<!--
-Контекст и цель: почему эта задача важна сейчас, какую проблему решаем,
-какой следующий шаг проекта она разблокирует.
-Можно оставить пустым, если контекст очевиден из «Что нужно сделать».
--->
-
-Этап 0 закрыт (документация + GitHub-репозиторий). Чтобы переходить к Auth (Этап 2) и каталогу (Этап 3), нужен рабочий каркас: запускаемый backend, инфраструктура в Docker и CI, который не даст случайно мержить сломанный код.
+Этап 1 закрыт (backend, Docker, CI). Без авторизации нельзя переходить к каталогу (Этап 3) и остальным фичам с персональными данными.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-<!--
-Какие файлы в репозитории релевантны: doc-файлы из docs/, существующие
-ADR, конкретные модули кода, тикеты/обсуждения.
--->
-
-- [`docs/12-roadmap.md`](docs/12-roadmap.md:19) §«Этап 1» — чек-лист и DoD этапа.
-- [`docs/02-architecture.md`](docs/02-architecture.md:43) §2.1 — слои backend (`api/`, `services/`, `repositories/`, `models/`, `workers/`, `core/`).
-- [`docs/03-tech-stack.md`](docs/03-tech-stack.md:11) — версии и инструменты (Python 3.12, FastAPI 0.110+, SQLAlchemy 2.x async, Alembic, pydantic-settings, RQ, ruff/black/mypy, pytest).
-- [`docs/09-infrastructure.md`](docs/09-infrastructure.md:22) §«Структура docker-compose» — состав сервисов.
-- [`docs/adr/0001-fastapi-as-backend.md`](docs/adr/0001-fastapi-as-backend.md:1) — почему FastAPI.
-- [`.env.example`](.env.example:1) — переменные окружения, на которые опираться.
+- [`docs/12-roadmap.md`](docs/12-roadmap.md:34) §«Этап 2» — чек-лист и DoD.
+- [`docs/05-api-spec.md`](docs/05-api-spec.md:16) §1 Auth, §9 Admin.
+- [`docs/04-database-schema.md`](docs/04-database-schema.md:17) — `users`, `invites`.
+- [`docs/15-master-account.md`](docs/15-master-account.md:1) — master, триггеры, CLI.
+- [`docs/11-security-legal.md`](docs/11-security-legal.md:1) — пароли, JWT.
+- [`backend/app/models/user.py`](backend/app/models/user.py:1) — текущая модель (без `is_master`).
+- [`.env.example`](.env.example:7) — `JWT_*`, `REGISTRATION_*`, `INVITE_CODES`.
 
 ---
 
 ## ✅ Критерии готовности (Definition of Done)
 
-<!--
-Конкретный список того, что должно быть сделано, чтобы задача считалась
-закрытой. Чем конкретнее — тем меньше шансов на недопонимание.
-Хорошо подходят чек-листы.
--->
+Из [`docs/12-roadmap.md`](docs/12-roadmap.md:35):
 
-Из [`docs/12-roadmap.md`](docs/12-roadmap.md:20):
+- [ ] Модели: User (с `is_master`), Invite.
+- [ ] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](docs/15-master-account.md:1)).
+- [ ] Регистрация (invite) / логин / refresh / me.
+- [ ] argon2 для паролей, JWT.
+- [ ] Middleware авторизации, `require_admin`, `require_master`.
+- [ ] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
+- [ ] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
+- [ ] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
+- [ ] Обновлены соответствующие doc-файлы и кросс-ссылки.
 
-- [x] Создана структура `backend/` (см. [`docs/02-architecture.md`](docs/02-architecture.md:43) §2.1).
-- [x] `pyproject.toml` с конфигом для `ruff`, `black`, `mypy`, `pytest`.
-- [x] `app/main.py` — FastAPI с health-check (`GET /health` → `200 {"status": "ok"}`).
-- [x] `app/core/config.py` через `pydantic-settings`.
-- [x] Подключение к Postgres + Redis (async).
-- [x] `alembic init` + первая миграция (таблица `users` — минимальный набор полей).
-- [x] `infra/docker-compose.yml`: `postgres`, `redis`, `backend`.
-- [x] `Dockerfile` для backend.
-- [x] CI на GitHub Actions: `pytest` + `ruff` + `mypy`.
-- [x] Общее: обновлены соответствующие doc-файлы и кросс-ссылки.
-- [x] При архитектурных решениях, не закреплённых в `docs/` — создан ADR в [`docs/adr/`](docs/adr/0000-template.md:1). _(новых ADR не потребовалось — решения уже в docs/adr/0001 и архитектуре)_
-
-**Финальный DoD этапа (из roadmap):** `docker compose up` → `curl http://localhost:8000/health` отдаёт `200 {status: "ok"}`. Тесты в CI зелёные.
+**Финальный DoD этапа:** master создан через CLI, по curl авторизован; обычный пользователь регистрируется по invite; admin/master эндпоинты возвращают корректные коды.
 
 ---
 
 ## 🚧 Ограничения и нюансы
 
-<!--
-То, чего НЕ нужно делать; что должно остаться неизменным; известные
-подводные камни; зависимости от внешних сервисов; ограничения по
-производительности/железу (домашний сервер); совместимость со старыми
-данными и т.п.
--->
-
-- Работа ведётся в ветке `stage/1-backend-skeleton`, мерж в `main` через PR (см. [`docs/12-roadmap.md`](docs/12-roadmap.md:180) §«Принципы»).
-- Версии — фиксированные (см. [`docs/03-tech-stack.md`](docs/03-tech-stack.md:88)).
+- Работа в ветке `stage/2-auth`, мерж в `main` через PR (см. [`docs/12-roadmap.md`](docs/12-roadmap.md:180)).
+- Версии зависимостей — фиксированные (см. [`docs/03-tech-stack.md`](docs/03-tech-stack.md:88)).
 - Не коммитить `.env`, аудио и секреты.
-- Минимальная таблица `users` на этом этапе — без `is_master` и `Invite`; они появятся на Этапе 2 (см. [`docs/12-roadmap.md`](docs/12-roadmap.md:34)).
+- API под префиксом `/api/v1` (см. [`docs/05-api-spec.md`](docs/05-api-spec.md:3)).
 
 ---
 
 ## ❓ Открытые вопросы
 
-<!--
-Что неясно разработчику и что нужно уточнить ДО начала работы.
-Агент должен задать эти вопросы первым делом.
-Если вопросов нет — оставь "—".
--->
-
-- 
-
-_Если вопросов нет — оставь `—`._
+—
 
 ---
 
 ## 📦 Ожидаемые артефакты
 
-<!--
-Что должно появиться в репозитории по итогу:
-- новые файлы (с примерным путём);
-- изменённые файлы;
-- миграции БД;
-- обновлённые секции в docs/...;
-- новые ADR.
--->
-
-- 
-
-_Можно оставить пустым — агент сам предложит список перед началом работы._
+—
 
 ---
 
 ## 📝 Лог работы по задаче
 
-<!--
-Опционально. Краткие заметки агента и разработчика по ходу выполнения:
-что сделано, что осталось, какие решения приняты. Помогает не терять
-контекст между сессиями.
--->
-
-- Предыдущая задача (Этап 0 — чистка документации и создание репозитория) заархивирована: [`docs/tasks-archive/2026-05-23-stage-0-docs-cleanup-and-repo.md`](docs/tasks-archive/2026-05-23-stage-0-docs-cleanup-and-repo.md:1).
-- 2026-05-27: реализован скелет backend в ветке `stage/1-backend-skeleton` — FastAPI, config, async Postgres/Redis, Alembic-миграция `users`, Docker Compose, CI. Локально: `ruff`, `mypy`, `pytest` — OK. Проверка `docker compose up` + `curl /health` — на стороне владельца (Docker daemon не был запущен в сессии агента).
+- Этап 1 заархивирован: [`docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md`](docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md:1). PR [#1](https://github.com/makoevvv/local_music/pull/1) смержен 2026-05-27; DoD подтверждён (`docker compose`, `alembic`, `curl /health`, CI).
 
 ---
