@@ -45,16 +45,16 @@
 
 ---
 
-## Этап 3. Каталог + плейлисты + плеер (web MVP)
-- [ ] Модели: Artist, Album, Genre, Language, Track, Playlist, PlaylistTrack, Play, Like.
-- [ ] Миграции + seed (genres, languages).
-- [ ] CRUD плейлистов; автосоздание «Любимое».
-- [ ] Эндпоинты каталога с фильтрами.
-- [ ] Endpoint стриминга с Range.
-- [ ] Скелет web (`web/`): Vite + React + TS + Tailwind + Router.
-- [ ] Страницы: Login, Catalog, Track page, Playlists, Playlist detail.
-- [ ] Плеер (HTML5 audio + UI), очередь, прогресс.
-- [ ] Лайки, добавление в плейлист.
+## Этап 3. Каталог + плейлисты + плеер (web MVP) ✅
+- [x] Модели: Artist, Album, Genre, Language, Track, Playlist, PlaylistTrack, Play, Like.
+- [x] Миграции + seed (genres, languages).
+- [x] CRUD плейлистов; автосоздание «Любимое».
+- [x] Эндпоинты каталога с фильтрами.
+- [x] Endpoint стриминга с Range.
+- [x] Скелет web (`web/`): Vite + React + TS + Tailwind + Router.
+- [x] Страницы: Login, Catalog, Track page, Playlists, Playlist detail.
+- [x] Плеер (HTML5 audio + UI), очередь, прогресс.
+- [x] Лайки, добавление в плейлист.
 
 **DoD:** в браузере можно залогиниться, увидеть каталог (можно тестовыми треками, загруженными вручную), послушать, добавить в плейлист.
 

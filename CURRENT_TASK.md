@@ -16,51 +16,47 @@
 
 ## 🎯 Что нужно сделать
 
-Этап 3 из [`docs/12-roadmap.md`](docs/12-roadmap.md:48) — каталог, плейлисты, стриминг и web MVP (Login, Catalog, Player).
+Этап 4 из [`docs/12-roadmap.md`](docs/12-roadmap.md:63) — поиск треков в интернете и асинхронная загрузка в каталог.
 
 ---
 
 ## 🤔 Зачем
 
-Этапы 1–2 закрыты (backend + auth). Нужен минимальный пользовательский сценарий: залогиниться, увидеть треки, послушать, собрать плейлист.
+Этапы 1–3 закрыты (backend, auth, каталог + web MVP). Нужен основной сценарий сервиса: найти трек по запросу, скачать и послушать без ручного `import-track`.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/12-roadmap.md`](docs/12-roadmap.md:48) §«Этап 3» — чек-лист и DoD.
-- [`docs/04-database-schema.md`](docs/04-database-schema.md:1) — модели каталога, плейлистов, plays, likes.
-- [`docs/05-api-spec.md`](docs/05-api-spec.md:1) §3 Tracks, §4 Likes, §5 Playlists, §7 Reference data.
-- [`docs/02-architecture.md`](docs/02-architecture.md:1) §2.7 Web-клиент.
-- [`docs/03-tech-stack.md`](docs/03-tech-stack.md:1) — React, Vite, Tailwind, Zustand.
-- [`backend/app/services/auth.py`](backend/app/services/auth.py:1) — готовая auth-подсистема.
+- [`docs/12-roadmap.md`](docs/12-roadmap.md:63) §«Этап 4» — чек-лист и DoD.
+- [`docs/06-music-sourcing.md`](docs/06-music-sourcing.md:1) — поиск, кандидаты, загрузка, обогащение метаданных.
+- [`docs/05-api-spec.md`](docs/05-api-spec.md:1) — эндпоинты `/search`, `/tracks/from-candidate` (если описаны).
+- [`docs/02-architecture.md`](docs/02-architecture.md:1) — воркеры, очереди.
+- [`backend/app/services/catalog.py`](backend/app/services/catalog.py:1) — готовый каталог и storage.
 
 ---
 
 ## ✅ Критерии готовности (Definition of Done)
 
-Из [`docs/12-roadmap.md`](docs/12-roadmap.md:49):
+Из [`docs/12-roadmap.md`](docs/12-roadmap.md:63):
 
-- [ ] Модели: Artist, Album, Genre, Language, Track, Playlist, PlaylistTrack, Play, Like.
-- [ ] Миграции + seed (genres, languages).
-- [ ] CRUD плейлистов; автосоздание «Любимое».
-- [ ] Эндпоинты каталога с фильтрами.
-- [ ] Endpoint стриминга с Range.
-- [ ] Скелет web (`web/`): Vite + React + TS + Tailwind + Router.
-- [ ] Страницы: Login, Catalog, Track page, Playlists, Playlist detail.
-- [ ] Плеер (HTML5 audio + UI), очередь, прогресс.
-- [ ] Лайки, добавление в плейлист.
-- [ ] Обновлены соответствующие doc-файлы и кросс-ссылки.
+- [ ] yt-dlp в Docker-образе backend.
+- [ ] Эндпоинт `/search` с кешем (Redis + `search_candidates`).
+- [ ] Эндпоинт `/tracks/from-candidate`.
+- [ ] RQ-воркер: `download_track`, дедупликация по `audio_sha256`.
+- [ ] Обогащение метаданных: MusicBrainz, Last.fm.
+- [ ] WebSocket уведомления о статусе.
+- [ ] UI: поиск, выбор кандидата, прогресс.
 
-**Финальный DoD этапа:** в браузере можно залогиниться, увидеть каталог (тестовые треки), послушать, добавить в плейлист.
+**Финальный DoD этапа:** пользователь ввёл запрос → выбрал кандидата → через ~30 сек трек слушается, есть обложка и жанр.
 
 ---
 
 ## 🚧 Ограничения и нюансы
 
-- Работа в ветке `stage/3-catalog-web`, мерж в `main` через PR.
-- Тестовые аудиофайлы — локально, не коммитить в git.
-- Storage: `STORAGE_LOCAL_PATH` (см. [`docs/02-architecture.md`](docs/02-architecture.md:72)).
+- Работа в ветке `stage/4-search-download`, мерж в `main` через PR.
+- Опираться на tier-политику источников из [`docs/06-music-sourcing.md`](docs/06-music-sourcing.md:8).
+- Не смешивать с этапом 4.1 (ручная загрузка + AcoustID) — только search + download pipeline.
 
 ---
 
@@ -78,10 +74,6 @@
 
 ## 📝 Лог работы по задаче
 
-- Этап 2 заархивирован: [`docs/tasks-archive/2026-05-28-stage-2-auth.md`](docs/tasks-archive/2026-05-28-stage-2-auth.md:1). PR [#2](https://github.com/makoevvv/local_music/pull/2) смержен.
-- Backend: модели каталога, миграция `20260529_0003` + seed genres/languages, storage, API tracks/playlists/reference, CORS, CLI `import-track`, интеграционные тесты `test_catalog.py`.
-- Web: `web/` — Vite + React + TS + Tailwind, страницы Login/Catalog/Track/Playlists, плеер с очередью, лайки, добавление в плейлист.
-- Docker: volume `../data/storage:/data/storage` для backend.
-- Проверки: `ruff`, `mypy` — OK; `pnpm build` — OK; локальный `pytest` требует Postgres с `music:music` (как в CI) или Docker Compose.
+- Этап 3 заархивирован: [`docs/tasks-archive/2026-05-29-stage-3-catalog-web.md`](docs/tasks-archive/2026-05-29-stage-3-catalog-web.md:1). PR [#3](https://github.com/makoevvv/local_music/pull/3) смержен.
 
 ---

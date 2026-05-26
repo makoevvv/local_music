@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🧭 Текущий статус
 
-Этап: **3. Каталог + плейлисты + web MVP** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:48). Этапы 1–2 закрыты (PR [#1](https://github.com/makoevvv/local_music/pull/1), [#2](https://github.com/makoevvv/local_music/pull/2)).
+Этап: **4. Поиск и загрузка из интернета** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:63). Этапы 1–3 закрыты (PR [#1](https://github.com/makoevvv/local_music/pull/1), [#2](https://github.com/makoevvv/local_music/pull/2), [#3](https://github.com/makoevvv/local_music/pull/3)).
 
 ## ⚖️ Лицензия и оговорка
 
