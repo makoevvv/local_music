@@ -370,7 +370,7 @@ class PlaylistService:
         return await self.get_playlist(user, playlist_id)
 
     async def _get_owned_playlist(self, user: User, playlist_id: uuid.UUID) -> Playlist:
-        playlist = await self._playlists.get_by_id(playlist_id)
+        playlist = await self._playlists.get(playlist_id)
         if playlist is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Playlist not found")
         if playlist.owner_id != user.id:

@@ -202,6 +202,10 @@ class PlaylistRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get(self, playlist_id: uuid.UUID) -> Playlist | None:
+        result = await self._session.execute(select(Playlist).where(Playlist.id == playlist_id))
+        return result.scalar_one_or_none()
+
     async def count_tracks(self, playlist_id: uuid.UUID) -> int:
         result = await self._session.execute(
             select(func.count()).select_from(PlaylistTrack).where(PlaylistTrack.playlist_id == playlist_id)

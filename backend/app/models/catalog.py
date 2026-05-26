@@ -200,7 +200,12 @@ class Playlist(Base):
     )
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    tracks: Mapped[list[PlaylistTrack]] = relationship(back_populates="playlist", order_by="PlaylistTrack.position")
+    tracks: Mapped[list[PlaylistTrack]] = relationship(
+        back_populates="playlist",
+        order_by="PlaylistTrack.position",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class PlaylistTrack(Base):
