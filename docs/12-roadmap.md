@@ -17,15 +17,15 @@
 ---
 
 ## Этап 1. Скелет backend + Docker
-- [ ] Создать структуру `backend/` (см. [`02-architecture.md`](02-architecture.md:1) §2.1).
-- [ ] `pyproject.toml`, `ruff`, `black`, `mypy`, `pytest`.
-- [ ] `app/main.py` — FastAPI с health-check.
-- [ ] `app/core/config.py` через pydantic-settings.
-- [ ] Подключение к Postgres + Redis (async).
-- [ ] Alembic init + первая миграция (users).
-- [ ] `infra/docker-compose.yml`: postgres, redis, backend.
-- [ ] `Dockerfile` для backend.
-- [ ] CI: pytest + ruff + mypy в GitHub Actions.
+- [x] Создать структуру `backend/` (см. [`02-architecture.md`](02-architecture.md:1) §2.1).
+- [x] `pyproject.toml`, `ruff`, `black`, `mypy`, `pytest`.
+- [x] `app/main.py` — FastAPI с health-check.
+- [x] `app/core/config.py` через pydantic-settings.
+- [x] Подключение к Postgres + Redis (async).
+- [x] Alembic init + первая миграция (users).
+- [x] `infra/docker-compose.yml`: postgres, redis, backend.
+- [x] `Dockerfile` для backend.
+- [x] CI: pytest + ruff + mypy в GitHub Actions.
 
 **DoD:** `docker compose up` → `curl http://localhost:8000/health` отдаёт `200 {status: "ok"}`. Тесты в CI зелёные.
 

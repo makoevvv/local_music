@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🧭 Текущий статус
 
-Этап: **1. Скелет backend + Docker** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:19). Этап 0 (документация, репозиторий) закрыт.
+Этап: **1. Скелет backend + Docker** — реализован в ветке `stage/1-backend-skeleton` (ожидает PR). Следующий: Этап 2 — Auth.
 
 ## ⚖️ Лицензия и оговорка
 

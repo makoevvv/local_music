@@ -64,17 +64,17 @@ ADR, конкретные модули кода, тикеты/обсуждени
 
 Из [`docs/12-roadmap.md`](docs/12-roadmap.md:20):
 
-- [ ] Создана структура `backend/` (см. [`docs/02-architecture.md`](docs/02-architecture.md:43) §2.1).
-- [ ] `pyproject.toml` с конфигом для `ruff`, `black`, `mypy`, `pytest`.
-- [ ] `app/main.py` — FastAPI с health-check (`GET /health` → `200 {"status": "ok"}`).
-- [ ] `app/core/config.py` через `pydantic-settings`.
-- [ ] Подключение к Postgres + Redis (async).
-- [ ] `alembic init` + первая миграция (таблица `users` — минимальный набор полей).
-- [ ] `infra/docker-compose.yml`: `postgres`, `redis`, `backend`.
-- [ ] `Dockerfile` для backend.
-- [ ] CI на GitHub Actions: `pytest` + `ruff` + `mypy`.
-- [ ] Общее: обновлены соответствующие doc-файлы и кросс-ссылки.
-- [ ] При архитектурных решениях, не закреплённых в `docs/` — создан ADR в [`docs/adr/`](docs/adr/0000-template.md:1).
+- [x] Создана структура `backend/` (см. [`docs/02-architecture.md`](docs/02-architecture.md:43) §2.1).
+- [x] `pyproject.toml` с конфигом для `ruff`, `black`, `mypy`, `pytest`.
+- [x] `app/main.py` — FastAPI с health-check (`GET /health` → `200 {"status": "ok"}`).
+- [x] `app/core/config.py` через `pydantic-settings`.
+- [x] Подключение к Postgres + Redis (async).
+- [x] `alembic init` + первая миграция (таблица `users` — минимальный набор полей).
+- [x] `infra/docker-compose.yml`: `postgres`, `redis`, `backend`.
+- [x] `Dockerfile` для backend.
+- [x] CI на GitHub Actions: `pytest` + `ruff` + `mypy`.
+- [x] Общее: обновлены соответствующие doc-файлы и кросс-ссылки.
+- [x] При архитектурных решениях, не закреплённых в `docs/` — создан ADR в [`docs/adr/`](docs/adr/0000-template.md:1). _(новых ADR не потребовалось — решения уже в docs/adr/0001 и архитектуре)_
 
 **Финальный DoD этапа (из roadmap):** `docker compose up` → `curl http://localhost:8000/health` отдаёт `200 {status: "ok"}`. Тесты в CI зелёные.
 
@@ -136,5 +136,6 @@ _Можно оставить пустым — агент сам предложи
 -->
 
 - Предыдущая задача (Этап 0 — чистка документации и создание репозитория) заархивирована: [`docs/tasks-archive/2026-05-23-stage-0-docs-cleanup-and-repo.md`](docs/tasks-archive/2026-05-23-stage-0-docs-cleanup-and-repo.md:1).
+- 2026-05-27: реализован скелет backend в ветке `stage/1-backend-skeleton` — FastAPI, config, async Postgres/Redis, Alembic-миграция `users`, Docker Compose, CI. Локально: `ruff`, `mypy`, `pytest` — OK. Проверка `docker compose up` + `curl /health` — на стороне владельца (Docker daemon не был запущен в сессии агента).
 
 ---
