@@ -31,15 +31,15 @@
 
 ---
 
-## Этап 2. Auth + master-аккаунт + базовые модели
-- [ ] Модели: User (с `is_master`), Invite.
-- [ ] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](15-master-account.md:1)).
-- [ ] Регистрация (invite) / логин / refresh / me.
-- [ ] argon2 для паролей, JWT.
-- [ ] Middleware авторизации, `require_admin`, `require_master`.
-- [ ] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
-- [ ] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
-- [ ] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
+## Этап 2. Auth + master-аккаунт + базовые модели ✅
+- [x] Модели: User (с `is_master`), Invite.
+- [x] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](15-master-account.md:1)).
+- [x] Регистрация (invite) / логин / refresh / me.
+- [x] argon2 для паролей, JWT.
+- [x] Middleware авторизации, `require_admin`, `require_master`.
+- [x] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
+- [x] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
+- [x] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
 
 **DoD:** master создан через CLI, по curl авторизован; обычный пользователь регистрируется по invite; admin/master эндпоинты возвращают корректные коды.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import enum
 import uuid
 from datetime import datetime
@@ -30,6 +32,7 @@ class User(Base):
         nullable=False,
         server_default=UserRole.user,
     )
+    is_master: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

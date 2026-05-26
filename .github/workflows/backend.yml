@@ -48,6 +48,7 @@ jobs:
     env:
       APP_ENV: test
       APP_SECRET_KEY: ci-secret-key-at-least-32-characters
+      JWT_SECRET: ci-jwt-secret-at-least-32-characters-long
       DATABASE_URL: postgresql+asyncpg://music:music@localhost:5432/local_music
       REDIS_URL: redis://localhost:6379/0
 
@@ -68,6 +69,9 @@ jobs:
 
       - name: Mypy
         run: mypy app
+
+      - name: Apply migrations
+        run: alembic upgrade head
 
       - name: Pytest
         run: pytest

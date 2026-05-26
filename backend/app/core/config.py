@@ -18,6 +18,15 @@ class Settings(BaseSettings):
     database_url: str
     redis_url: str
 
+    jwt_secret: str
+    jwt_alg: str = "HS256"
+    jwt_access_ttl_min: int = 60
+    jwt_refresh_ttl_days: int = 30
+    jwt_refresh_ttl_days_master: int = 7
+
+    registration_enabled: bool = True
+    registration_invite_only: bool = True
+
     @property
     def is_development(self) -> bool:
         return self.app_env == "development"

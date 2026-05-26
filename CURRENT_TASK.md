@@ -42,15 +42,15 @@
 
 Из [`docs/12-roadmap.md`](docs/12-roadmap.md:35):
 
-- [ ] Модели: User (с `is_master`), Invite.
-- [ ] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](docs/15-master-account.md:1)).
-- [ ] Регистрация (invite) / логин / refresh / me.
-- [ ] argon2 для паролей, JWT.
-- [ ] Middleware авторизации, `require_admin`, `require_master`.
-- [ ] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
-- [ ] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
-- [ ] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
-- [ ] Обновлены соответствующие doc-файлы и кросс-ссылки.
+- [x] Модели: User (с `is_master`), Invite.
+- [x] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](docs/15-master-account.md:1)).
+- [x] Регистрация (invite) / логин / refresh / me.
+- [x] argon2 для паролей, JWT.
+- [x] Middleware авторизации, `require_admin`, `require_master`.
+- [x] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
+- [x] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
+- [x] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
+- [x] Обновлены соответствующие doc-файлы и кросс-ссылки.
 
 **Финальный DoD этапа:** master создан через CLI, по curl авторизован; обычный пользователь регистрируется по invite; admin/master эндпоинты возвращают корректные коды.
 
@@ -80,5 +80,6 @@
 ## 📝 Лог работы по задаче
 
 - Этап 1 заархивирован: [`docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md`](docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md:1). PR [#1](https://github.com/makoevvv/local_music/pull/1) смержен 2026-05-27; DoD подтверждён (`docker compose`, `alembic`, `curl /health`, CI).
+- 2026-05-28: Этап 2 в ветке `stage/2-auth` — auth API, master/invite, миграции, CLI, интеграционные тесты.
 
 ---

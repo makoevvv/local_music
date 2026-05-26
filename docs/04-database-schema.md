@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX users_single_master_idx ON users ((1)) WHERE is_master = tru
 ```
 Триггеры запрета удаления и изменения `is_master` описаны в [`15-master-account.md`](15-master-account.md:1).
 
-> **Этап 1:** первая миграция Alembic (`20260527_0001`) создаёт таблицу `users` с минимальным набором полей **без** `is_master`. Поле, partial unique index и триггеры добавляются на Этапе 2.
+> **Этап 2:** миграция `20260528_0002` добавляет `users.is_master`, таблицы `invites`, `refresh_tokens`, `audit_log` и триггеры защиты master (см. [`15-master-account.md`](15-master-account.md:1)).
 
 ### `invites`
 | id | uuid PK |
@@ -250,6 +250,16 @@ PK: (user_id, track_id)
 | updated_at | timestamptz | |
 
 Индексы: `(job_id, status)`, `(isrc)`. Для идемпотентности: уникальный частичный индекс `(job_id, external_id)` при `external_id is not null`.
+
+### `refresh_tokens`
+| Поле | Тип | Описание |
+|---|---|---|
+| id | uuid PK | |
+| user_id | uuid FK users.id ON DELETE CASCADE | |
+| token_hash | text unique not null | sha256 от refresh-токена |
+| expires_at | timestamptz not null | |
+| revoked_at | timestamptz null | |
+| created_at | timestamptz default now() | |
 
 ### `audit_log` (минимальный аудит admin-действий)
 | id | bigserial PK |
