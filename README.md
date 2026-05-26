@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🧭 Текущий статус
 
-Этап: **2. Auth** — реализован в ветке `stage/2-auth` (ожидает PR). Следующий: Этап 3 — каталог.
+Этап: **3. Каталог + плейлисты + web MVP** — см. [`docs/12-roadmap.md`](docs/12-roadmap.md:48). Этапы 1–2 закрыты (PR [#1](https://github.com/makoevvv/local_music/pull/1), [#2](https://github.com/makoevvv/local_music/pull/2)).
 
 ## ⚖️ Лицензия и оговорка
 

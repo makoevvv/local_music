@@ -16,52 +16,51 @@
 
 ## 🎯 Что нужно сделать
 
-Этап 2 из [`docs/12-roadmap.md`](docs/12-roadmap.md:34) — Auth, master-аккаунт, invite-регистрация, JWT и admin-эндпоинты.
+Этап 3 из [`docs/12-roadmap.md`](docs/12-roadmap.md:48) — каталог, плейлисты, стриминг и web MVP (Login, Catalog, Player).
 
 ---
 
 ## 🤔 Зачем
 
-Этап 1 закрыт (backend, Docker, CI). Без авторизации нельзя переходить к каталогу (Этап 3) и остальным фичам с персональными данными.
+Этапы 1–2 закрыты (backend + auth). Нужен минимальный пользовательский сценарий: залогиниться, увидеть треки, послушать, собрать плейлист.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/12-roadmap.md`](docs/12-roadmap.md:34) §«Этап 2» — чек-лист и DoD.
-- [`docs/05-api-spec.md`](docs/05-api-spec.md:16) §1 Auth, §9 Admin.
-- [`docs/04-database-schema.md`](docs/04-database-schema.md:17) — `users`, `invites`.
-- [`docs/15-master-account.md`](docs/15-master-account.md:1) — master, триггеры, CLI.
-- [`docs/11-security-legal.md`](docs/11-security-legal.md:1) — пароли, JWT.
-- [`backend/app/models/user.py`](backend/app/models/user.py:1) — текущая модель (без `is_master`).
-- [`.env.example`](.env.example:7) — `JWT_*`, `REGISTRATION_*`, `INVITE_CODES`.
+- [`docs/12-roadmap.md`](docs/12-roadmap.md:48) §«Этап 3» — чек-лист и DoD.
+- [`docs/04-database-schema.md`](docs/04-database-schema.md:1) — модели каталога, плейлистов, plays, likes.
+- [`docs/05-api-spec.md`](docs/05-api-spec.md:1) §3 Tracks, §4 Likes, §5 Playlists, §7 Reference data.
+- [`docs/02-architecture.md`](docs/02-architecture.md:1) §2.7 Web-клиент.
+- [`docs/03-tech-stack.md`](docs/03-tech-stack.md:1) — React, Vite, Tailwind, Zustand.
+- [`backend/app/services/auth.py`](backend/app/services/auth.py:1) — готовая auth-подсистема.
 
 ---
 
 ## ✅ Критерии готовности (Definition of Done)
 
-Из [`docs/12-roadmap.md`](docs/12-roadmap.md:35):
+Из [`docs/12-roadmap.md`](docs/12-roadmap.md:49):
 
-- [x] Модели: User (с `is_master`), Invite.
-- [x] Миграции + триггеры запрета удаления/изменения master (см. [`15-master-account.md`](docs/15-master-account.md:1)).
-- [x] Регистрация (invite) / логин / refresh / me.
-- [x] argon2 для паролей, JWT.
-- [x] Middleware авторизации, `require_admin`, `require_master`.
-- [x] CLI: `init-master` (одноразовый), `create-invite`, `reset-master-password`.
-- [x] Эндпоинты `/admin/users/*` и `/admin/users/{id}/role` (только master).
-- [x] Тесты: попытка удалить master → 403, попытка изменить `is_master` → 403, единственность master в БД.
-- [x] Обновлены соответствующие doc-файлы и кросс-ссылки.
+- [ ] Модели: Artist, Album, Genre, Language, Track, Playlist, PlaylistTrack, Play, Like.
+- [ ] Миграции + seed (genres, languages).
+- [ ] CRUD плейлистов; автосоздание «Любимое».
+- [ ] Эндпоинты каталога с фильтрами.
+- [ ] Endpoint стриминга с Range.
+- [ ] Скелет web (`web/`): Vite + React + TS + Tailwind + Router.
+- [ ] Страницы: Login, Catalog, Track page, Playlists, Playlist detail.
+- [ ] Плеер (HTML5 audio + UI), очередь, прогресс.
+- [ ] Лайки, добавление в плейлист.
+- [ ] Обновлены соответствующие doc-файлы и кросс-ссылки.
 
-**Финальный DoD этапа:** master создан через CLI, по curl авторизован; обычный пользователь регистрируется по invite; admin/master эндпоинты возвращают корректные коды.
+**Финальный DoD этапа:** в браузере можно залогиниться, увидеть каталог (тестовые треки), послушать, добавить в плейлист.
 
 ---
 
 ## 🚧 Ограничения и нюансы
 
-- Работа в ветке `stage/2-auth`, мерж в `main` через PR (см. [`docs/12-roadmap.md`](docs/12-roadmap.md:180)).
-- Версии зависимостей — фиксированные (см. [`docs/03-tech-stack.md`](docs/03-tech-stack.md:88)).
-- Не коммитить `.env`, аудио и секреты.
-- API под префиксом `/api/v1` (см. [`docs/05-api-spec.md`](docs/05-api-spec.md:3)).
+- Работа в ветке `stage/3-catalog-web`, мерж в `main` через PR.
+- Тестовые аудиофайлы — локально, не коммитить в git.
+- Storage: `STORAGE_LOCAL_PATH` (см. [`docs/02-architecture.md`](docs/02-architecture.md:72)).
 
 ---
 
@@ -79,7 +78,6 @@
 
 ## 📝 Лог работы по задаче
 
-- Этап 1 заархивирован: [`docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md`](docs/tasks-archive/2026-05-27-stage-1-backend-skeleton.md:1). PR [#1](https://github.com/makoevvv/local_music/pull/1) смержен 2026-05-27; DoD подтверждён (`docker compose`, `alembic`, `curl /health`, CI).
-- 2026-05-28: Этап 2 в ветке `stage/2-auth` — auth API, master/invite, миграции, CLI, интеграционные тесты.
+- Этап 2 заархивирован: [`docs/tasks-archive/2026-05-28-stage-2-auth.md`](docs/tasks-archive/2026-05-28-stage-2-auth.md:1). PR [#2](https://github.com/makoevvv/local_music/pull/2) смержен.
 
 ---
