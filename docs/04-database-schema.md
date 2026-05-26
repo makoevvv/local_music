@@ -33,6 +33,8 @@ CREATE UNIQUE INDEX users_single_master_idx ON users ((1)) WHERE is_master = tru
 ```
 Триггеры запрета удаления и изменения `is_master` описаны в [`15-master-account.md`](15-master-account.md:1).
 
+> **Этап 1:** первая миграция Alembic (`20260527_0001`) создаёт таблицу `users` с минимальным набором полей **без** `is_master`. Поле, partial unique index и триггеры добавляются на Этапе 2.
+
 ### `invites`
 | id | uuid PK |
 | code | text unique not null |
