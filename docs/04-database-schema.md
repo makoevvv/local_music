@@ -143,7 +143,7 @@ PK: (track_id, language_id)
 - `idx_track_sources_track` (`track_id`).
 - `idx_track_sources_kind_status` (`source_kind`, `last_status`).
 
-> При создании трека (из кандидата или ручной загрузки) **обязательно** создаётся хотя бы одна запись в `track_sources`. Поля `tracks.source_*` остаются как denormalized «основной источник» для быстрых выборок и UI.
+> **Статус реализации:** таблица `track_sources` — этап **4.2** (ещё нет в миграциях). На этапе **4** при скачивании из search заполняются только denormalized поля `tracks.source_kind`, `tracks.source_id`, `tracks.source_url`, `tracks.cover_url_origin`. После 4.2 — дублируем/нормализуем в `track_sources` и backfill для существующих треков.
 
 ### `playlists`
 | id | uuid PK |

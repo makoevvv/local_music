@@ -22,6 +22,22 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
 
+    restricted_sources_enabled: bool = True
+    search_cache_ttl_hours: int = 24
+    rq_queue_name: str = "default"
+
+    musicbrainz_user_agent: str = "local-music/0.1 (local@example.com)"
+    lastfm_api_key: str | None = None
+
+    search_timeout_seconds: int = 45
+    ytdlp_socket_timeout_seconds: int = 15
+    # SOCKS5/HTTP proxy for yt-dlp (search + download). Use socks5h:// so DNS goes via proxy.
+    ytdlp_proxy: str | None = None
+    # PO Token provider (bgutil HTTP server in compose). Bypasses YouTube bot checks without cookies.
+    ytdlp_pot_base_url: str = "http://ytdlp-pot:4416"
+    # Optional override: Netscape cookies file (usually not needed when ytdlp-pot is running).
+    ytdlp_cookies_file: str | None = None
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

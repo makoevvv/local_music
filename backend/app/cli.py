@@ -41,7 +41,9 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     reset_master.add_argument("--password-stdin", action="store_true")
 
-    import_track = subparsers.add_parser("import-track", help="Import local audio file into catalog")
+    import_track = subparsers.add_parser(
+        "import-track", help="Import local audio file into catalog"
+    )
     import_track.add_argument("--file", required=True)
     import_track.add_argument("--title", required=True)
     import_track.add_argument("--artist", required=True)

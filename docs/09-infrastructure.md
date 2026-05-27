@@ -26,10 +26,13 @@
 services:
   postgres:       # PostgreSQL 16, volume: pgdata
   redis:          # Redis 7
-  backend:        # FastAPI (uvicorn), depends_on: postgres, redis
+  ytdlp-pot:      # PO Token для YouTube (bgutil), без cookies браузера
+  backend:        # FastAPI (uvicorn), depends_on: postgres, redis, ytdlp-pot
   worker:         # rq worker, тот же образ, command=rq worker ...
   web:            # сборка React (либо отдельный nginx-static-контейнер)
   caddy:          # reverse proxy, ports: 80, 443
+  # профиль compose `proxy` (если YouTube недоступен напрямую из Docker):
+  proxy:          # sing-box VLESS → локальный SOCKS :1080
   # опционально:
   minio:          # если STORAGE_BACKEND=s3
   uptime-kuma:    # мониторинг
@@ -42,11 +45,14 @@ services:
 
 ## Запуск
 ```bash
-cp .env.example .env  # отредактировать
-docker compose -f infra/docker-compose.yml up -d
-docker compose exec backend alembic upgrade head
-docker compose exec backend python -m app.cli init-master
+cp .env.example .env  # отредактировать; при VPN: YTDLP_PROXY=socks5h://proxy:1080
+# sing-box: cp infra/proxy/sing-box.config.json.example infra/proxy/sing-box.config.json
+docker compose -p local_music -f infra/docker-compose.yml --profile proxy up -d --build
+docker compose -p local_music -f infra/docker-compose.yml exec backend alembic upgrade head
+docker compose -p local_music -f infra/docker-compose.yml exec backend python -m app.cli init-master
 ```
+
+См. также [`infra/proxy/README.md`](../infra/proxy/README.md) (VLESS, `ytdlp-pot`, cookies не нужны).
 
 ## Reverse proxy (Caddy)
 

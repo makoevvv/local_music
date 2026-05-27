@@ -122,7 +122,7 @@ class CatalogService:
 
     async def get_track(self, user: User, track_id: uuid.UUID) -> TrackDetail:
         track = await self._catalog.get_track_with_relations(track_id)
-        if track is None or track.status != TrackStatus.ready:
+        if track is None or track.status not in {TrackStatus.ready, TrackStatus.downloading}:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Track not found")
         like = await self._catalog.get_user_like(user.id, track.id)
         genres = await self._catalog.get_genres_for_track(track.id)
@@ -144,7 +144,9 @@ class CatalogService:
         try:
             file_path = resolve_track_file(track.file_path)
         except FileNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Track file missing") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Track file missing"
+            ) from exc
         media_type = {
             "mp3": "audio/mpeg",
             "opus": "audio/opus",
@@ -170,7 +172,9 @@ class CatalogService:
         await self._catalog.delete_like(user.id, track_id)
         await self._session.commit()
 
-    async def start_play(self, user: User, track_id: uuid.UUID, source: str | None) -> PlayStartResponse:
+    async def start_play(
+        self, user: User, track_id: uuid.UUID, source: str | None
+    ) -> PlayStartResponse:
         track = await self._catalog.get_track(track_id)
         if track is None or track.status != TrackStatus.ready:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Track not found")

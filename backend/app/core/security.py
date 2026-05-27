@@ -60,16 +60,14 @@ def decode_access_token(token: str) -> uuid.UUID:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type")
     sub = payload.get("sub")
     if not sub:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
+        )
     return uuid.UUID(sub)
 
 
 def refresh_token_ttl(user: User) -> timedelta:
-    days = (
-        settings.jwt_refresh_ttl_days_master
-        if user.is_master
-        else settings.jwt_refresh_ttl_days
-    )
+    days = settings.jwt_refresh_ttl_days_master if user.is_master else settings.jwt_refresh_ttl_days
     return timedelta(days=days)
 
 

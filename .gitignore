@@ -12,6 +12,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+infra/proxy/sing-box.config.json
+**/ytdlp-cookies.txt
 *.pem
 *.key
 
@@ -28,6 +30,7 @@ htmlcov/
 .coverage
 
 # Node / Web
+.pnpm-store/
 node_modules/
 dist/
 build/

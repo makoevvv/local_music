@@ -31,7 +31,7 @@ async def clean_tables(engine, request: pytest.FixtureRequest) -> AsyncIterator[
         await conn.execute(
             text(
                 "TRUNCATE TABLE likes, plays, playlist_tracks, playlists, track_languages, "
-                "track_genres, track_artists, tracks, albums, artists, "
+                "track_genres, track_artists, tracks, albums, artists, search_candidates, "
                 "refresh_tokens, invites, audit_log, users RESTART IDENTITY CASCADE"
             )
         )

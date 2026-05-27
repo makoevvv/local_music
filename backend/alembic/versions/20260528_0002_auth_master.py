@@ -87,7 +87,9 @@ def upgrade() -> None:
         sa.Column("action", sa.String(), nullable=False),
         sa.Column("target_kind", sa.String(), nullable=True),
         sa.Column("target_id", sa.String(), nullable=True),
-        sa.Column("metadata", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False),
+        sa.Column(
+            "metadata", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False
+        ),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),

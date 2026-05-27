@@ -16,4 +16,6 @@ def register_exception_handlers(app: FastAPI) -> None:
             "status": exc.status_code,
             "detail": detail,
         }
-        return JSONResponse(status_code=exc.status_code, content=body, media_type="application/problem+json")
+        return JSONResponse(
+            status_code=exc.status_code, content=body, media_type="application/problem+json"
+        )

@@ -92,6 +92,25 @@ uvicorn app.main:app --reload --port 8000
 python -m app.cli import-track --file /path/to/track.mp3 --title "Title" --artist "Artist" --user-id <uuid>
 ```
 
+### Worker (этап 4+)
+```bash
+docker compose up -d --build
+docker compose exec backend alembic upgrade head
+# worker поднимается сервисом worker в compose
+docker compose logs -f worker
+```
+
+### Поиск и скачивание (VPN + PO Token)
+
+1. Один раз: VLESS → [`infra/proxy/sing-box.config.json`](../infra/proxy/sing-box.config.json), в `.env`: `YTDLP_PROXY=socks5h://proxy:1080`
+2. Запуск (сервис `ytdlp-pot` для YouTube без cookies браузера):
+
+```bash
+docker compose -p local_music -f infra/docker-compose.yml --profile proxy up -d --build
+```
+
+Подробнее: [`infra/proxy/README.md`](../infra/proxy/README.md).
+
 ### Web
 ```bash
 cd web

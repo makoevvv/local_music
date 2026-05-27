@@ -13,7 +13,9 @@ from tests.conftest_auth import login
 
 
 @pytest.mark.asyncio
-async def test_register_with_invite(client: AsyncClient, db_session: AsyncSession, master_user: User) -> None:
+async def test_register_with_invite(
+    client: AsyncClient, db_session: AsyncSession, master_user: User
+) -> None:
     invite = Invite(code="register-me-please", created_by_user_id=master_user.id)
     await InviteRepository(db_session).add(invite)
     await db_session.flush()
