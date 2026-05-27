@@ -7,6 +7,7 @@ from sqlalchemy import text
 
 from app.api.health import router as health_router
 from app.api.v1.router import router as api_v1_router
+from app.api.v1.ws import router as ws_router
 from app.core.config import settings
 from app.core.database import engine
 from app.core.exceptions import register_exception_handlers
@@ -34,3 +35,4 @@ app.add_middleware(
 )
 app.include_router(health_router)
 app.include_router(api_v1_router, prefix="/api/v1")
+app.include_router(ws_router, prefix="/api/v1")

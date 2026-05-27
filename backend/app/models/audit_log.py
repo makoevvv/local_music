@@ -23,7 +23,9 @@ class AuditLog(Base):
     action: Mapped[str] = mapped_column(String, nullable=False)
     target_kind: Mapped[str | None] = mapped_column(String, nullable=True)
     target_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    metadata_: Mapped[dict[str, Any]] = mapped_column("metadata", JSONB, nullable=False, server_default="{}")
+    metadata_: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSONB, nullable=False, server_default="{}"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

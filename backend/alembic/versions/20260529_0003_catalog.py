@@ -32,18 +32,33 @@ def upgrade() -> None:
 
     op.create_table(
         "artists",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("mbid", sa.String(), nullable=True),
         sa.Column("sort_name", sa.String(), nullable=True),
         sa.Column("metadata", postgresql.JSONB(), server_default="{}", nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("mbid"),
     )
     op.create_table(
         "albums",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("primary_artist_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("mbid", sa.String(), nullable=True),
@@ -57,7 +72,12 @@ def upgrade() -> None:
     )
     op.create_table(
         "genres",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("slug", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -66,7 +86,12 @@ def upgrade() -> None:
     )
     op.create_table(
         "languages",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("code", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -74,7 +99,12 @@ def upgrade() -> None:
     )
     op.create_table(
         "tracks",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("album_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("duration_seconds", sa.Integer(), nullable=True),
@@ -96,7 +126,12 @@ def upgrade() -> None:
         sa.Column("added_by_user_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("play_count", sa.Integer(), server_default="0", nullable=False),
         sa.Column("cover_url_origin", sa.String(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(["added_by_user_id"], ["users.id"]),
         sa.ForeignKeyConstraint(["album_id"], ["albums.id"]),
@@ -136,13 +171,23 @@ def upgrade() -> None:
     )
     op.create_table(
         "playlists",
-        sa.Column("id", postgresql.UUID(as_uuid=True), server_default=sa.text("gen_random_uuid()"), nullable=False),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column("owner_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("is_favourite", sa.Boolean(), server_default=sa.text("false"), nullable=False),
         sa.Column("is_public", sa.Boolean(), server_default=sa.text("false"), nullable=False),
         sa.Column("cover_path", sa.String(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(["owner_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
@@ -159,7 +204,9 @@ def upgrade() -> None:
         sa.Column("playlist_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("track_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("position", sa.Integer(), server_default="0", nullable=False),
-        sa.Column("added_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "added_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["playlist_id"], ["playlists.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["track_id"], ["tracks.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("playlist_id", "track_id"),
@@ -169,7 +216,12 @@ def upgrade() -> None:
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("track_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("started_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "started_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.Column("listened_seconds", sa.Integer(), server_default="0", nullable=False),
         sa.Column("completed", sa.Boolean(), server_default=sa.text("false"), nullable=False),
         sa.Column("source", sa.Text(), nullable=True),
@@ -183,7 +235,12 @@ def upgrade() -> None:
         "likes",
         sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("track_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.Column("sentiment", like_sentiment, nullable=False),
         sa.ForeignKeyConstraint(["track_id"], ["tracks.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
@@ -203,7 +260,11 @@ def upgrade() -> None:
         ("soundtrack", "Soundtrack"),
     ]
     for slug, name in genres:
-        op.execute(sa.text("INSERT INTO genres (slug, name) VALUES (:slug, :name)").bindparams(slug=slug, name=name))
+        op.execute(
+            sa.text("INSERT INTO genres (slug, name) VALUES (:slug, :name)").bindparams(
+                slug=slug, name=name
+            )
+        )
 
     languages = [
         ("en", "English"),
@@ -214,7 +275,11 @@ def upgrade() -> None:
         ("inst", "Instrumental"),
     ]
     for code, name in languages:
-        op.execute(sa.text("INSERT INTO languages (code, name) VALUES (:code, :name)").bindparams(code=code, name=name))
+        op.execute(
+            sa.text("INSERT INTO languages (code, name) VALUES (:code, :name)").bindparams(
+                code=code, name=name
+            )
+        )
 
 
 def downgrade() -> None:
