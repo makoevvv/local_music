@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     redis_url: str
 
     storage_local_path: str = "/data/storage"
+    exports_local_path: str = "/data/exports"
 
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
 

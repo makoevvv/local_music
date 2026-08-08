@@ -9,6 +9,7 @@ from app.core.rq_queue import get_queue
 from app.models.catalog import Artist, ArtistRole, Track, TrackArtist, TrackStatus
 from app.repositories.search import SearchRepository
 from app.schemas.search import FromCandidateRequest, FromCandidateResponse, TrackStatusResponse
+from app.services.track_sources import build_track_source
 from app.workers.tasks import download_track_job
 
 
@@ -54,6 +55,16 @@ class SourcingService:
                 artist_id=artist.id,
                 role=ArtistRole.main,
                 position=0,
+            )
+        )
+        self._session.add(
+            build_track_source(
+                track_id=track.id,
+                source_kind=candidate.source_kind,
+                source_url=str(data.get("source_url") or "") or None,
+                source_id=candidate.source_id,
+                added_by_user_id=user_id,
+                tier=candidate.tier,
             )
         )
         await self._session.commit()

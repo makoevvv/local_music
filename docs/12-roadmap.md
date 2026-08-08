@@ -95,17 +95,17 @@
 
 ---
 
-## Этап 4.2. Index & Restore (переносимая библиотека)
+## Этап 4.2. Index & Restore (переносимая библиотека) ✅
 Подробности — [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1).
-- [ ] Миграция: таблица `track_sources`, поля `tracks.acoustid_fingerprint` (если ещё нет).
-- [ ] При создании трека (download из search, ручная загрузка 4.1) **всегда** пишем запись в `track_sources` (сейчас этап 4 пишет только denormalized `tracks.source_*`).
-- [ ] CLI: `index export` (jsonl + manifest, `--minimal/--include-covers/--include-secrets/--no-plays`).
-- [ ] CLI: `index import --mode=skip-existing|overwrite|mirror` с обработкой конфликтов UUID/sha256.
-- [ ] CLI: `library restore` (yt-dlp по сохранённым источникам, fallback через acoustid_fingerprint).
-- [ ] Воркер `verify_sources` (раз в неделю, лёгкая проверка доступности ссылок).
-- [ ] Admin/Master эндпоинты `/admin/index/*` и `/admin/library/*`.
-- [ ] Расписание: ежедневный минимальный экспорт + еженедельный полный.
-- [ ] JSON-схема `docs/schemas/library.schema.json` для валидации экспортов.
+- [x] Миграция: таблица `track_sources`, поле `tracks.acoustid_fingerprint`, статус `unrecoverable`.
+- [x] При создании трека (download из search, CLI `import-track`) **всегда** пишем запись в `track_sources` (+ backfill в миграции).
+- [x] CLI: `index export` (jsonl + manifest, `--minimal/--include-covers/--include-secrets/--no-plays`).
+- [x] CLI: `index import --mode=skip-existing|overwrite|mirror` с обработкой конфликтов UUID/sha256.
+- [x] CLI: `library restore` (yt-dlp по `track_sources`, fuzzy fallback по artist/title; AcoustID API — этап 4.1).
+- [x] Воркер/CLI `verify-sources` (лёгкая проверка доступности ссылок).
+- [x] Admin/Master эндпоинты `/admin/index/*` и `/admin/library/*`.
+- [x] Расписание: `infra/scripts/export_index.sh` (ежедневный minimal + еженедельный full).
+- [x] JSON-схема [`docs/schemas/library.schema.json`](schemas/library.schema.json).
 
 **DoD:** на чистом сервере по тарболу `library-*.tar.gz` можно восстановить структуру библиотеки (метаданные) и перекачать аудио для треков с живыми источниками; статистика по «протухшим» источникам видна master'у.
 

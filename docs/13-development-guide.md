@@ -90,6 +90,13 @@ uvicorn app.main:app --reload --port 8000
 
 # импорт локального аудиофайла в каталог (этап 3+)
 python -m app.cli import-track --file /path/to/track.mp3 --title "Title" --artist "Artist" --user-id <uuid>
+
+# library index (этап 4.2+)
+python -m app.cli index export --out /data/exports/library.tar.gz
+python -m app.cli index export --minimal --out /data/exports/library.jsonl.gz
+python -m app.cli index import --in /data/exports/library.tar.gz --mode skip-existing
+python -m app.cli library restore --dry-run
+python -m app.cli verify-sources --limit 100
 ```
 
 ### Worker (этап 4+)

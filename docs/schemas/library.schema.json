@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local-music.local/schemas/library.schema.json",
+  "title": "Local Music library index track line",
+  "type": "object",
+  "required": ["id", "title", "sources"],
+  "additionalProperties": true,
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "title": { "type": "string", "minLength": 1 },
+    "artists": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "mbid": { "type": ["string", "null"] },
+          "position": { "type": "integer" }
+        }
+      }
+    },
+    "album": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "title": { "type": "string" },
+        "mbid": { "type": ["string", "null"] },
+        "is_single": { "type": "boolean" },
+        "release_year": { "type": ["integer", "null"] },
+        "cover_path": { "type": ["string", "null"] }
+      }
+    },
+    "genres": { "type": "array", "items": { "type": "string" } },
+    "languages": { "type": "array", "items": { "type": "string" } },
+    "duration": { "type": ["integer", "null"] },
+    "audio_sha256": { "type": ["string", "null"] },
+    "mbid": { "type": ["string", "null"] },
+    "isrc": { "type": ["string", "null"] },
+    "acoustid_fingerprint": { "type": ["string", "null"] },
+    "cover_url_origin": { "type": ["string", "null"] },
+    "file_format": { "type": ["string", "null"] },
+    "status": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "id": { "type": ["string", "null"] },
+          "kind": { "type": "string" },
+          "url": { "type": ["string", "null"] },
+          "source_id": { "type": ["string", "null"] },
+          "original_filename": { "type": ["string", "null"] },
+          "original_tags": { "type": "object" },
+          "recovery_priority": { "type": "integer" },
+          "last_status": { "type": ["string", "null"] },
+          "added_at": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}
