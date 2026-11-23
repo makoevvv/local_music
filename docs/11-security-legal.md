@@ -15,7 +15,7 @@
 
 ## 3. Транспорт
 - HTTPS обязателен снаружи. Через **Cloudflare Tunnel** TLS обеспечивается автоматически.
-- Внутри docker-сети — HTTP (изолированная bridge-сеть).
+- Внутри docker-сети API слушает HTTP. Caddy дополнительно слушает `:443` с `tls internal`; публичный сертификат — у Cloudflare.
 - HSTS включён в Caddyfile.
 
 ## 4. Защита API

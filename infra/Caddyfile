@@ -1,0 +1,32 @@
+# Production site. Public HTTPS is the Cloudflare Tunnel certificate.
+# Inside the docker network Caddy also serves HTTPS with its internal CA (:443).
+# Point the tunnel hostname at http://caddy:80 (see infra/cloudflared/config.yml.example).
+
+(app) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	@api path /api/* /health /openapi.json /docs /redoc /ws/*
+	handle @api {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		root * /srv/web
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+:80 {
+	import app
+}
+
+:443 {
+	tls internal
+	import app
+}

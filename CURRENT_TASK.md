@@ -6,31 +6,37 @@
 
 ## 🎯 Что нужно сделать
 
-Этап **6** — поставить iOS-клиент на iPhone владельца ([`docs/10-mobile-apps.md`](docs/10-mobile-apps.md:1)).
+Этап **7** — оставшаяся полировка ([`docs/12-roadmap.md`](docs/12-roadmap.md:1)).
 
-Код клиента уже в `ios/LocalMusic.xcodeproj`: логин и Keychain, каталог, плейлисты, плеер с фоновым аудио. На машине без Xcode это не собирается. Осталось открыть проект на Mac, выбрать Team и нажать Run на свой телефон. TestFlight по-прежнему опционален.
+Уже есть профиль compose `edge`: Caddy (`infra/Caddyfile`) и `cloudflared`. Токен туннеля владелец кладёт в `CLOUDFLARE_TUNNEL_TOKEN`. Установку iOS на iPhone не повторять.
 
-Этап 7 не начинать, пока владелец не подтвердит установку.
+Дальше по чек-листу, не всё сразу:
+
+1. Бэкапы по расписанию (`infra/scripts/backup_db.sh` и cron из [`docs/09-infrastructure.md`](docs/09-infrastructure.md:1)).
+2. Uptime Kuma.
+3. JSON-логи backend.
+4. Покрытие тестами критичных модулей ≥ 60%.
+5. README и прогон «как поднять» с нуля.
 
 ---
 
 ## 🤔 Зачем
 
-Слушать библиотеку с iPhone, а не только из браузера.
+Сервис снаружи по HTTPS и с предсказуемыми бэкапами, логами и проверками.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/10-mobile-apps.md`](docs/10-mobile-apps.md:1)
-- [`docs/12-roadmap.md`](docs/12-roadmap.md:1) — этап 6
-- Архив 5: [`docs/tasks-archive/2026-11-24-stage-5-vibe.md`](docs/tasks-archive/2026-11-24-stage-5-vibe.md:1)
+- [`docs/09-infrastructure.md`](docs/09-infrastructure.md:1)
+- [`docs/11-security-legal.md`](docs/11-security-legal.md:1)
+- [`docs/12-roadmap.md`](docs/12-roadmap.md:1) — этап 7
 
 ---
 
 ## ✅ Критерии готовности (кратко)
 
-Приложение собирается в Xcode, ставится на iPhone владельца и играет трек с домашнего сервера.
+DoD этапа целиком: сервис живёт неделю, открывается снаружи с iPhone, бэкапы появляются каждый день. Этот срез закрывает только Caddy и туннель в репозитории.
 
 ---
 
@@ -42,5 +48,5 @@
 
 ## 📝 Лог работы по задаче
 
-- Срез кода: `ios/LocalMusic.xcodeproj`, APIClient, Keychain, Catalog, Playlists, AVPlayer, Now Playing.
-- Не сделано здесь: подпись и установка на устройство, TestFlight.
+- Профиль `edge`: Caddy (:80 и :443 `tls internal`) и `cloudflared` с токеном из env.
+- Не сделано: cron бэкапов, Uptime Kuma, JSON-логи, порог покрытия, проверка README с нуля.

@@ -14,6 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -24,6 +25,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   proxy:
     image: ghcr.io/sagernet/sing-box:v1.11.5
@@ -89,5 +91,35 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  # Production edge: static web + Caddy, and Cloudflare Tunnel.
+  # docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d --build
+  caddy:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-}
+    profiles: ["edge"]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.11.1
+    profiles: ["edge"]
+    restart: unless-stopped
+    command:
+      ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN:-}"]
+    depends_on:
+      - caddy
+
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:

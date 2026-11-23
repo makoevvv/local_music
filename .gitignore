@@ -52,6 +52,7 @@ captures/
 
 # Docker
 *.pid
+infra/cloudflared/credentials.json
 
 # Media / storage (НЕ коммитим аудио)
 storage/

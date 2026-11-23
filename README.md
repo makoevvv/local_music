@@ -40,6 +40,14 @@ cd web && pnpm install && pnpm dev
 - Web: http://localhost:3000 (Vite dev server, отдельно от compose)
 - API: http://localhost:8000/docs (Swagger UI)
 
+Продакшн-край (Caddy + Cloudflare Tunnel), когда в `.env` есть `CLOUDFLARE_TUNNEL_TOKEN`:
+
+```bash
+docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d --build
+```
+
+Подробности — [`docs/09-infrastructure.md`](docs/09-infrastructure.md).
+
 Подробнее: [`docs/13-development-guide.md`](docs/13-development-guide.md), [`docs/09-infrastructure.md`](docs/09-infrastructure.md).
 
 ## 📚 Документация
@@ -75,7 +83,8 @@ cd web && pnpm install && pnpm dev
 | 4.1 Ручная загрузка | ✅ в `main` — PR [#6](https://github.com/makoevvv/local_music/pull/6) |
 | 4.3 External imports | ✅ в `main` |
 | 5. Моя волна | ✅ в `main` — PR [#11](https://github.com/makoevvv/local_music/pull/11) |
-| 6. iOS | код клиента в этой ветке; установка на iPhone ещё у владельца |
+| 6. iOS | код в `main` — PR [#13](https://github.com/makoevvv/local_music/pull/13); установка на iPhone у владельца |
+| 7. Полировка | первый срез в этой ветке: Caddy и Cloudflare Tunnel |
 
 Детали по этапам: [`docs/12-roadmap.md`](docs/12-roadmap.md).
 

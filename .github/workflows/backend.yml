@@ -9,12 +9,16 @@ on:
     paths:
       - "backend/**"
       - "ios/**"
+      - "infra/**"
+      - "web/**"
       - ".github/workflows/backend.yml"
   pull_request:
     branches: [main, "stage/**", "cursor/**"]
     paths:
       - "backend/**"
       - "ios/**"
+      - "infra/**"
+      - "web/**"
       - ".github/workflows/backend.yml"
 
 defaults:
