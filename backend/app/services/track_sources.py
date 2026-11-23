@@ -7,6 +7,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.elements import ColumnElement
 
 from app.models.catalog import TrackSource
 
@@ -73,6 +74,41 @@ def build_track_source(
         recovery_priority=priority,
         last_status=last_status,
     )
+
+
+def _source_identity(
+    track_id: uuid.UUID,
+    source_kind: str | None,
+    source_id: str | None,
+) -> tuple[ColumnElement[bool], ColumnElement[bool], ColumnElement[bool]]:
+    track_match: ColumnElement[bool] = TrackSource.track_id == track_id
+    kind_match: ColumnElement[bool] = TrackSource.source_kind == normalize_source_kind(source_kind)
+    id_match: ColumnElement[bool] = TrackSource.source_id.is_not_distinct_from(source_id)
+    return track_match, kind_match, id_match
+
+
+async def find_track_source(
+    session: AsyncSession,
+    track_id: uuid.UUID,
+    source_kind: str | None,
+    source_id: str | None,
+) -> TrackSource | None:
+    found = await session.scalar(
+        select(TrackSource).where(*_source_identity(track_id, source_kind, source_id))
+    )
+    return found if isinstance(found, TrackSource) else None
+
+
+def find_track_source_sync(
+    session: Session,
+    track_id: uuid.UUID,
+    source_kind: str | None,
+    source_id: str | None,
+) -> TrackSource | None:
+    found = session.scalar(
+        select(TrackSource).where(*_source_identity(track_id, source_kind, source_id))
+    )
+    return found if isinstance(found, TrackSource) else None
 
 
 async def add_track_source(session: AsyncSession, source: TrackSource) -> TrackSource:

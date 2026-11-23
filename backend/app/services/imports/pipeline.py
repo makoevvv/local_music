@@ -20,6 +20,7 @@ from app.models.catalog import (
 from app.models.imports import ImportItem, ImportJob
 from app.models.search import SearchCandidate
 from app.schemas.upload import CandidateSource
+from app.services.artists import get_or_create_artist_sync
 from app.services.source_matching.match import find_public_candidates
 from app.services.source_matching.score import token_set_ratio
 
@@ -32,9 +33,7 @@ def schedule_public_download(
     title: str,
     artist: str,
 ) -> uuid.UUID:
-    artist_row = Artist(name=artist, sort_name=artist)
-    session.add(artist_row)
-    session.flush()
+    artist_row = get_or_create_artist_sync(session, artist)
     search_candidate = SearchCandidate(
         query_hash="import",
         source_kind=candidate.kind,

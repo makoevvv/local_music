@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AddToPlaylistModal } from '@/components/AddToPlaylistModal';
+import { CoverArt } from '@/components/CoverArt';
 import { LikeButton } from '@/components/LikeButton';
 import { formatArtists, formatDuration } from '@/lib/utils';
 import { usePlayerStore } from '@/store/playerStore';
@@ -63,7 +64,9 @@ export function TrackRow({ track, index, showIndex = false, onPlay, onRemove }: 
           )}
         </div>
 
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-center gap-3">
+          <CoverArt coverUrl={track.cover_url} alt="" className="h-10 w-10" />
+          <div className="min-w-0">
           <Link
             to={`/tracks/${track.id}`}
             className={cn('block truncate font-medium', isActive ? 'text-accent' : 'text-white')}
@@ -76,6 +79,7 @@ export function TrackRow({ track, index, showIndex = false, onPlay, onRemove }: 
             ) : null}
           </Link>
           <p className="truncate text-sm text-zinc-400">{formatArtists(track.artists)}</p>
+          </div>
         </div>
 
         <p className="hidden truncate text-sm text-zinc-500 sm:block">

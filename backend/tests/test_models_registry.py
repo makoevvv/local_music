@@ -9,5 +9,11 @@ def test_users_table_registered() -> None:
 
 
 def test_track_sources_table_registered() -> None:
-    assert "track_sources" in Base.metadata.tables
+    table = Base.metadata.tables["track_sources"]
     assert "acoustid_fingerprint" in Base.metadata.tables["tracks"].c
+    unique = next(
+        index for index in table.indexes if index.name == "uq_track_sources_track_kind_id"
+    )
+    assert unique.unique is True
+    assert list(unique.columns.keys()) == ["track_id", "source_kind", "source_id"]
+    assert unique.dialect_options["postgresql"]["nulls_not_distinct"] is True

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { logPlay } from '@/api/tracks';
+import { CoverArt } from '@/components/CoverArt';
 import { QueuePanel } from '@/components/QueuePanel';
 import { useStreamUrl } from '@/hooks/useStreamUrl';
 import { formatArtists, formatDuration } from '@/lib/utils';
@@ -119,6 +120,7 @@ export function PlayerBar() {
           </div>
 
           <div className="flex items-center gap-4">
+            <CoverArt coverUrl={currentTrack.cover_url} alt="" className="h-12 w-12" />
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-white">{currentTrack.title}</p>
               <p className="truncate text-sm text-zinc-400">{formatArtists(currentTrack.artists)}</p>

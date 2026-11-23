@@ -30,6 +30,16 @@ def resolve_track_file(relative_path: str) -> Path:
     return resolved
 
 
+def resolve_cover_file(relative_path: str) -> Path:
+    root = storage_root().resolve()
+    candidate = Path(relative_path)
+    resolved = candidate.resolve() if candidate.is_absolute() else (root / candidate).resolve()
+    if not resolved.is_relative_to(root) or not resolved.is_file():
+        msg = f"Cover file not found: {relative_path}"
+        raise FileNotFoundError(msg)
+    return resolved
+
+
 def save_cover_file(owner_id: uuid.UUID, source: Path) -> str:
     extension = source.suffix.lstrip(".") or "jpg"
     destination = storage_root() / "covers" / f"{owner_id}.{extension}"

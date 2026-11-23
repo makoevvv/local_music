@@ -59,6 +59,7 @@ export interface TrackSummary {
   unverified?: boolean;
   artists: ArtistRef[];
   album: AlbumRef | null;
+  cover_url?: string | null;
   user_sentiment: LikeSentiment | null;
 }
 

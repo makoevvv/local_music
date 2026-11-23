@@ -8,10 +8,9 @@ from fastapi import HTTPException, status
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.storage import resolve_track_file
+from app.core.storage import resolve_cover_file, resolve_track_file
 from app.models.catalog import (
     Album,
-    Artist,
     ArtistRole,
     Genre,
     Language,
@@ -42,7 +41,27 @@ from app.schemas.catalog import (
     TrackListItem,
     TrackListResponse,
 )
+from app.services.artists import get_or_create_artist
 from app.services.track_sources import build_track_source
+
+
+def cover_url_for_track(track: Track) -> str | None:
+    album = track.album
+    if album is not None and album.cover_path:
+        try:
+            resolve_cover_file(album.cover_path)
+        except FileNotFoundError:
+            pass
+        else:
+            return f"/api/v1/tracks/{track.id}/cover"
+    candidates: list[object] = []
+    if album is not None and isinstance(album.metadata_, dict):
+        candidates.append(album.metadata_.get("cover_url"))
+    candidates.append(track.cover_url_origin)
+    for value in candidates:
+        if isinstance(value, str) and value.startswith(("http://", "https://")):
+            return value
+    return None
 
 
 def _artist_briefs(track: Track) -> list[ArtistBrief]:
@@ -70,6 +89,7 @@ def _track_list_item(track: Track, sentiment: LikeSentiment | None = None) -> Tr
         has_lyrics=track.has_lyrics,
         artists=_artist_briefs(track),
         album=album,
+        cover_url=cover_url_for_track(track),
         unverified=bool((track.metadata_ or {}).get("unverified")),
         user_sentiment=sentiment,
     )
@@ -164,6 +184,32 @@ class CatalogService:
             filename=f"{track.title}.{track.file_format or 'mp3'}",
         )
 
+    async def stream_cover(self, user: User, track_id: uuid.UUID) -> FileResponse:
+        track = await self._catalog.get_track(track_id)
+        if track is None or track.status not in {TrackStatus.ready, TrackStatus.downloading}:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Track not found")
+        cover_path = track.album.cover_path if track.album is not None else None
+        if not cover_path:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cover not found")
+        try:
+            file_path = resolve_cover_file(cover_path)
+        except FileNotFoundError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Cover not found"
+            ) from exc
+        media_type = {
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "png": "image/png",
+            "webp": "image/webp",
+            "gif": "image/gif",
+        }.get(file_path.suffix.lstrip(".").lower(), "application/octet-stream")
+        return FileResponse(
+            path=file_path,
+            media_type=media_type,
+            content_disposition_type="inline",
+        )
+
     async def set_like(self, user: User, track_id: uuid.UUID, payload: LikeRequest) -> None:
         track = await self._catalog.get_track(track_id)
         if track is None or track.status != TrackStatus.ready:
@@ -219,8 +265,7 @@ class CatalogService:
     ) -> Track:
         from app.core.storage import copy_track_file
 
-        artist = Artist(name=artist_name, sort_name=artist_name)
-        await self._catalog.add(artist)
+        artist = await get_or_create_artist(self._session, artist_name)
         album = None
         if album_title:
             album = Album(title=album_title, primary_artist_id=artist.id, is_single=False)

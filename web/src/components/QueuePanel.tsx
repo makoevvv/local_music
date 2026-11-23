@@ -1,3 +1,4 @@
+import { CoverArt } from '@/components/CoverArt';
 import { usePlayerStore } from '@/store/playerStore';
 import { formatArtists, formatDuration } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,7 @@ export function QueuePanel() {
                 currentTrack?.id === track.id && 'bg-accent/10',
               )}
             >
+              <CoverArt coverUrl={track.cover_url} alt="" className="h-10 w-10" />
               <button
                 type="button"
                 className="min-w-0 flex-1 text-left"

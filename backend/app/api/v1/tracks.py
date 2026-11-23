@@ -104,6 +104,15 @@ async def get_track(track_id: uuid.UUID, user: CurrentUser, session: DbSession) 
     return await CatalogService(session).get_track(user, track_id)
 
 
+@router.get("/tracks/{track_id}/cover")
+async def get_track_cover(
+    track_id: uuid.UUID,
+    user: CurrentUser,
+    session: DbSession,
+) -> FileResponse:
+    return await CatalogService(session).stream_cover(user, track_id)
+
+
 @router.get("/tracks/{track_id}/stream")
 async def stream_track(
     track_id: uuid.UUID,

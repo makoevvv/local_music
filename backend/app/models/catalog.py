@@ -12,6 +12,7 @@ from sqlalchemy import (
     Enum,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -153,6 +154,16 @@ class Track(Base):
 
 class TrackSource(Base):
     __tablename__ = "track_sources"
+    __table_args__ = (
+        Index(
+            "uq_track_sources_track_kind_id",
+            "track_id",
+            "source_kind",
+            "source_id",
+            unique=True,
+            postgresql_nulls_not_distinct=True,
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()

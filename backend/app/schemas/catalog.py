@@ -50,6 +50,7 @@ class TrackListItem(BaseModel):
     has_lyrics: bool
     artists: list[ArtistBrief] = Field(default_factory=list)
     album: AlbumBrief | None = None
+    cover_url: str | None = None
     unverified: bool = False
     user_sentiment: LikeSentiment | None = None
 
