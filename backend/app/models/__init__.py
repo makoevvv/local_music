@@ -23,6 +23,7 @@ from app.models.invite import Invite
 from app.models.refresh_token import RefreshToken
 from app.models.search import SearchCandidate
 from app.models.user import User, UserRole
+from app.models.vibe import UserAffinity, VibePreset
 
 __all__ = [
     "Album",
@@ -50,5 +51,7 @@ __all__ = [
     "TrackSource",
     "TrackStatus",
     "User",
+    "UserAffinity",
     "UserRole",
+    "VibePreset",
 ]
