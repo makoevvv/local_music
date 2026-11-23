@@ -145,11 +145,11 @@
 ---
 
 ## Этап 6. iOS-приложение (базовое)
-- [ ] Xcode-проект в `ios/`.
-- [ ] Login + Keychain.
-- [ ] APIClient (async/await).
-- [ ] Catalog, Player (AVPlayer), Playlists.
-- [ ] Background audio + Now Playing.
+- [x] Xcode-проект в `ios/`.
+- [x] Login + Keychain.
+- [x] APIClient (async/await).
+- [x] Catalog, Player (AVPlayer), Playlists.
+- [x] Background audio + Now Playing.
 - [ ] Установка на личный iPhone через Xcode.
 - [ ] (Опц.) TestFlight upload.
 

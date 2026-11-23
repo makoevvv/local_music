@@ -1,17 +1,20 @@
 name: Backend CI
 
-# Runs on pull requests into main.
+# Runs on pull requests into main, stage branches, and cursor branches.
+# ios/** is listed so a client-only change still runs the backend suite.
 
 on:
   push:
     branches: [main, "stage/**"]
     paths:
       - "backend/**"
+      - "ios/**"
       - ".github/workflows/backend.yml"
   pull_request:
     branches: [main, "stage/**", "cursor/**"]
     paths:
       - "backend/**"
+      - "ios/**"
       - ".github/workflows/backend.yml"
 
 defaults:

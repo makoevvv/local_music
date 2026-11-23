@@ -30,6 +30,15 @@ ios/LocalMusic/
     Assets.xcassets
 ```
 
+### Клиент в репозитории
+Проект: [`ios/LocalMusic.xcodeproj`](../ios/LocalMusic.xcodeproj). На Mac: `open ios/LocalMusic.xcodeproj`, выбрать свою Team (бесплатный Apple ID подходит) и Run на свой iPhone. Адрес сервера вводится на экране входа, например `http://192.168.1.10:8000`.
+
+Срез этапа 6: логин, токены в Keychain, каталог, плейлисты, `AVPlayer` со стримом `/tracks/{id}/stream` и заголовком `Authorization`. `UIBackgroundModes = audio`, Now Playing и кнопки Control Center. Экранов «Моя волна» и Shazam нет: их нет в чек-листе базового клиента.
+
+ATS: в `Info.plist` включены `NSAllowsLocalNetworking` и `NSAllowsArbitraryLoads`, потому что адрес домашнего сервера задаётся при входе и часто бывает `http` в локальной сети. Для публичного HTTPS это послабление можно убрать.
+
+Установка на iPhone и TestFlight остаются на владельце: в этой среде нет Xcode, поэтому сборка здесь не проверялась. XCTest `LocalMusicTests` декодирует ответы каталога и плейлистов и запускается из Xcode (`Product → Test`).
+
 ### Особенности
 - Background audio: в Capabilities включить `Audio, AirPlay, and Picture in Picture` + `Background Modes: Audio`.
 - Стриминг по HTTPS обязателен (ATS). Если backend на http в локалке — добавить временно `NSAppTransportSecurity` для своего домена.
