@@ -73,8 +73,9 @@ cd web && pnpm install && pnpm dev
 | 4. Поиск и загрузка | ✅ в `main` — PR [#4](https://github.com/makoevvv/local_music/pull/4) |
 | 4.2 Index & Restore | ✅ в `main` — PR [#5](https://github.com/makoevvv/local_music/pull/5) |
 | 4.1 Ручная загрузка | ✅ в `main` — PR [#6](https://github.com/makoevvv/local_music/pull/6) |
-| 4.3 External imports | ✅ в этой ветке — см. [`CURRENT_TASK.md`](CURRENT_TASK.md) |
-| 5. Моя волна | 🔜 следующий |
+| 4.3 External imports | ✅ в `main` |
+| 5. Моя волна | ✅ в этой ветке — см. [`CURRENT_TASK.md`](CURRENT_TASK.md) |
+| 6. iOS | 🔜 следующий |
 
 Детали по этапам: [`docs/12-roadmap.md`](docs/12-roadmap.md).
 

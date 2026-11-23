@@ -271,6 +271,28 @@ PK: (user_id, track_id)
 | metadata | jsonb |
 | created_at | timestamptz |
 
+### `user_affinity` (снимок счётчиков волны)
+| Поле | Тип | Описание |
+|---|---|---|
+| user_id | uuid FK users.id ON DELETE CASCADE, PK | |
+| target_kind | text PK | `artist` или `genre` |
+| target_id | text PK | id артиста или жанра |
+| score | float default 0 | игра +1, like +3, dislike −5, skip −1 |
+| updated_at | timestamptz default now() | |
+
+Быстрый доступ — Redis hash `vibe:affinity:{user_id}:{kind}`. Строка в БД обновляется вместе с реакцией.
+
+### `vibe_presets`
+| Поле | Тип | Описание |
+|---|---|---|
+| id | uuid PK | |
+| user_id | uuid FK users.id ON DELETE CASCADE | |
+| name | text not null | уникально в паре с user_id |
+| settings | jsonb default '{}' | mood, genres, languages, mode, explicit_allowed, no_lyrics |
+| created_at | timestamptz default now() | |
+
+Сессия волны в БД не хранится: Redis `vibe:{session_id}:state`, TTL 6 часов.
+
 ## Миграции
 - Управляются Alembic. Каждая миграция = 1 PR.
 - Имя файла: `{YYYYMMDD_HHMM}_{slug}.py`.

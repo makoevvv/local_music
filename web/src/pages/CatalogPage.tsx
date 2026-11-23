@@ -4,6 +4,7 @@ import { getGenres, getLanguages } from '@/api/reference';
 import { getTracks } from '@/api/tracks';
 import { SearchFilters } from '@/components/SearchFilters';
 import { TrackList } from '@/components/TrackList';
+import { WavePanel } from '@/components/WavePanel';
 import { usePlayerStore } from '@/store/playerStore';
 
 const PAGE_SIZE = 20;
@@ -57,6 +58,8 @@ export function CatalogPage() {
         <h1 className="text-2xl font-semibold text-white">Catalog</h1>
         <p className="mt-1 text-sm text-zinc-400">Browse and play tracks from your library</p>
       </div>
+
+      <WavePanel />
 
       <SearchFilters
         q={filters.q}

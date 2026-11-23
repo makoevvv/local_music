@@ -6,28 +6,28 @@
 
 ## 🎯 Что нужно сделать
 
-Этап **5** — «Моя волна» ([`docs/07-vibe-recommendations.md`](docs/07-vibe-recommendations.md:1), [`docs/12-roadmap.md`](docs/12-roadmap.md:1)).
+Этап **6** — iOS-приложение ([`docs/12-roadmap.md`](docs/12-roadmap.md:1)).
 
-Этап 4.3 (импорт CSV/JSON, Spotify, Yandex) закрыт. Apple Music в чек-листе 4.3 остаётся опциональным.
+Этап 5 («Моя волна») закрыт в этой ветке: сессия, скоринг, фидбек, пресеты и панель на главной. Не входят в этап 5 и остаются будущим из [`docs/07-vibe-recommendations.md`](docs/07-vibe-recommendations.md:1): эмбеддинги/pgvector, коллаборативная фильтрация, время суток, A/B пресетов.
 
 ---
 
 ## 🤔 Зачем
 
-На главной можно включить волну и слушать подбор, который меняется от like/dislike/skip.
+Слушать библиотеку с iPhone владельца.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/07-vibe-recommendations.md`](docs/07-vibe-recommendations.md:1)
-- Архив 4.3: [`docs/tasks-archive/2026-11-24-stage-4-3-external-imports.md`](docs/tasks-archive/2026-11-24-stage-4-3-external-imports.md:1)
+- [`docs/12-roadmap.md`](docs/12-roadmap.md:1) — этап 6
+- Архив 5: [`docs/tasks-archive/2026-11-24-stage-5-vibe.md`](docs/tasks-archive/2026-11-24-stage-5-vibe.md:1)
 
 ---
 
 ## ✅ Критерии готовности (кратко)
 
-mood_profiles, scorer, pool, session, feedback, эндпоинты `/vibe/*`, UI главной, реакции влияют на следующий батч.
+Xcode-проект, логин, каталог, плеер, фоновое воспроизведение. Сборка и установка на iPhone — у владельца.
 
 ---
 
@@ -39,4 +39,4 @@ mood_profiles, scorer, pool, session, feedback, эндпоинты `/vibe/*`, UI
 
 ## 📝 Лог работы по задаче
 
-- Этап 4.3: файл CSV/JSON, Spotify OAuth, токен Яндекса, резолвер, очередь ambiguous, AES-GCM.
+- Этап 5: mood profiles, Boltzmann-скоринг, Redis-сессия, affinity в Redis и `user_affinity`, `/vibe/*`, панель My wave.

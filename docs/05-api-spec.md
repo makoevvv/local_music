@@ -84,8 +84,8 @@
 
 | Метод | Путь | Описание |
 |---|---|---|
-| POST | `/vibe/session` | Создать сессию. Body: `{mood, genres, languages, mode}`. Возвращает `{session_id, queue: [track,...]}`. |
-| POST | `/vibe/{session_id}/next` | Вернуть следующий батч (по 5 треков). |
+| POST | `/vibe/session` | Создать сессию. Body: `{mood, genres, languages, mode, explicit_allowed, no_lyrics}`. Возвращает `{session_id, queue}` (до 5 треков). |
+| POST | `/vibe/{session_id}/next` | Следующий батч: `{session_id, queue}` (до 5 треков). |
 | POST | `/vibe/{session_id}/feedback` | `{track_id, action: "like"\|"dislike"\|"skip"\|"played"}`. |
 | GET  | `/vibe/presets` | Список заранее сохранённых пресетов пользователя. |
 | POST | `/vibe/presets` | Сохранить пресет. |
