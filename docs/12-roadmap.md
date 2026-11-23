@@ -161,7 +161,7 @@
 - [x] Cloudflare Tunnel: сервис `cloudflared` в профиле `edge`, токен в `CLOUDFLARE_TUNNEL_TOKEN` (логин в Cloudflare — у владельца).
 - [x] HTTPS + Caddy в продакшн-варианте (`infra/Caddyfile`, профиль `edge`).
 - [x] Бэкапы по расписанию (`infra/scripts/backup_db.sh`, cron и launchd).
-- [ ] Мониторинг (Uptime Kuma).
+- [x] Мониторинг (Uptime Kuma), профиль compose `monitor`, UI на `127.0.0.1:3001`.
 - [ ] Логи структурированы (JSON).
 - [ ] Покрытие тестами критичных модулей ≥ 60%.
 - [ ] README обновлён, инструкция «как поднять» проверена с нуля.

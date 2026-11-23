@@ -119,7 +119,21 @@ services:
     depends_on:
       - caddy
 
+  # Optional health-check UI. Not published beyond the host loopback.
+  # docker compose -p local_music -f infra/docker-compose.yml --profile monitor up -d
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.5.12
+    profiles: ["monitor"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - uptime_kuma:/app/data
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
   caddy_data:
   caddy_config:
+  uptime_kuma:
