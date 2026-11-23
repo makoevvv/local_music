@@ -169,3 +169,73 @@ async def test_search_download_keeps_existing_album() -> None:
         track = session.get(Track, track_id)
         assert track is not None
         assert track.album_id == album_id
+
+
+@pytest.mark.asyncio
+async def test_duplicate_recording_mbid_does_not_abort_ready_track() -> None:
+    taken = "mbid-already-used"
+    with sync_session() as session:
+        owner = Track(
+            title="First",
+            file_path="pending",
+            status=TrackStatus.ready,
+            audio_sha256="a" * 64,
+            mbid=taken,
+        )
+        session.add(owner)
+        session.flush()
+        owner_id = owner.id
+    incoming_id, _ = _ready_track(title="Second", artist_name="Shared Artist")
+    decision = AlbumResolution(
+        title="Known Album",
+        release_group_mbid="rg-known",
+        release_year=2001,
+        is_single=False,
+        recording_mbid=taken,
+    )
+
+    with (
+        patch("app.services.metadata_enrichment.resolve_album", return_value=decision),
+        patch("app.services.metadata_enrichment._fetch_lastfm_tags", return_value=["Shoegaze"]),
+        sync_session() as session,
+    ):
+        enrich_track_metadata(session, incoming_id)
+        enriched = session.get(Track, incoming_id)
+        assert enriched is not None
+        enriched.play_count = 4
+
+    with sync_session() as session:
+        stored = session.get(Track, incoming_id)
+        assert stored is not None
+        assert stored.mbid is None
+        assert stored.play_count == 4
+        assert stored.status == TrackStatus.ready
+        album = session.get(Album, stored.album_id)
+        assert album is not None
+        assert album.title == "Known Album"
+        owner = session.get(Track, owner_id)
+        assert owner is not None
+        assert owner.mbid == taken
+
+
+@pytest.mark.asyncio
+async def test_enrichment_assigns_free_recording_mbid() -> None:
+    track_id, _ = _ready_track(title="Free", artist_name="Free Artist")
+    decision = AlbumResolution(
+        title="Free",
+        unresolved=True,
+        is_single=False,
+        recording_mbid="mbid-free",
+    )
+
+    with (
+        patch("app.services.metadata_enrichment.resolve_album", return_value=decision),
+        patch("app.services.metadata_enrichment._fetch_lastfm_tags", return_value=[]),
+        sync_session() as session,
+    ):
+        enrich_track_metadata(session, track_id)
+
+    with sync_session() as session:
+        stored = session.get(Track, track_id)
+        assert stored is not None
+        assert stored.mbid == "mbid-free"

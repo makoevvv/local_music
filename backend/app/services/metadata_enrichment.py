@@ -53,8 +53,12 @@ def _fetch_lastfm_tags(artist: str, title: str) -> list[str]:
 
 
 def enrich_track_metadata(session: Session, track_id: uuid.UUID) -> None:
+    # Enrichment is best-effort. A failed flush (duplicate mbid, genre race) must
+    # roll back only this savepoint; otherwise Postgres aborts the download transaction
+    # and a track that already reached `ready` is marked failed.
     try:
-        _enrich_track_metadata_impl(session, track_id)
+        with session.begin_nested():
+            _enrich_track_metadata_impl(session, track_id)
     except Exception:
         return
 
