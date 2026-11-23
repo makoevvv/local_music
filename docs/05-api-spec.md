@@ -54,7 +54,8 @@
 | Метод | Путь | Описание |
 |---|---|---|
 | GET  | `/tracks` | Каталог. Query: `q, artist, genre, language, year_from, year_to, has_lyrics, sort, page, page_size`. |
-| GET  | `/tracks/{id}` | Полная инфа: artists, album, genres, languages, audio features. |
+| GET  | `/tracks/{id}` | Полная инфа: artists, album, genres, languages, audio features. В объекте трека поле `cover_url`: `/api/v1/tracks/{id}/cover`, если файл обложки лежит в `albums.cover_path`, иначе `albums.metadata.cover_url` или `tracks.cover_url_origin`. |
+| GET  | `/tracks/{id}/cover` | Файл обложки альбома из хранилища (`albums.cover_path`). 404, если файла нет. |
 | GET  | `/tracks/{id}/stream` | Стрим аудио. Поддержка `Range`. |
 | POST | `/tracks/{id}/play` | Логирование начала прослушивания → `{play_id}`. |
 | POST | `/plays/{play_id}/heartbeat` | `{listened_seconds, completed}` — раз в N сек. |

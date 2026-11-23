@@ -37,6 +37,7 @@
 Индексы:
 - `idx_track_sources_track` (`track_id`).
 - `idx_track_sources_kind_status` (`source_kind`, `last_status`).
+- `uq_track_sources_track_kind_id` UNIQUE (`track_id`, `source_kind`, `source_id`) `NULLS NOT DISTINCT` — повтор того же источника не пишется. Миграция `20261124_0007`.
 
 `tracks.source_kind` / `tracks.source_url` / `tracks.source_id` остаются для «основного» источника (для UI), но **подробная история** живёт в `track_sources`.
 

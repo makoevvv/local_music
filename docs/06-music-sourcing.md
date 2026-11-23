@@ -65,7 +65,7 @@ POST /tracks/from-candidate { candidate_id }
 ```
 
 1. Backend читает candidate из кеша.
-2. Создаёт запись `Track(status=downloading, ...)` с базовыми полями (`source_*`, `cover_url_origin`).
+2. Создаёт запись `Track(status=downloading, ...)` с базовыми полями (`source_*`, `cover_url_origin`). Исполнитель ищется среди уже существующих (`mbid`, затем имя); новый `Artist` создаётся только если такого ещё нет.
 3. Пишет запись в `track_sources` с `recovery_priority` по tier кандидата (см. [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1)).
 4. Ставит задачу `download_track(track_id, candidate)` в RQ.
 5. Возвращает `{track_id}`.

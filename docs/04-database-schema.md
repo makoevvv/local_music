@@ -51,6 +51,8 @@ CREATE UNIQUE INDEX users_single_master_idx ON users ((1)) WHERE is_master = tru
 | metadata | jsonb default '{}' | теги, ссылки, страна |
 | created_at | timestamptz |
 
+При добавлении трека (поиск, ручная загрузка, CLI `import-track`, внешний импорт, восстановление индекса) исполнитель **переиспользуется**: сначала по `mbid`, затем по имени без учёта регистра и повторяющихся пробелов. Новая строка создаётся, только если совпадения нет. Если у найденной строки `mbid` пустой, а во входящих данных он есть — `mbid` дописывается. Одинаковое имя при разных непустых `mbid` остаётся двумя исполнителями.
+
 ### `albums`
 | id | uuid PK |
 | title | text not null |
@@ -142,6 +144,7 @@ PK: (track_id, language_id)
 Индексы:
 - `idx_track_sources_track` (`track_id`).
 - `idx_track_sources_kind_status` (`source_kind`, `last_status`).
+- `uq_track_sources_track_kind_id` UNIQUE (`track_id`, `source_kind`, `source_id`) `NULLS NOT DISTINCT`. Одна и та же тройка не хранится дважды; `NULL` в `source_id` считается совпадением. Миграция `20261124_0007` перед созданием индекса удаляет дубликаты и оставляет самую раннюю строку.
 
 > **Статус реализации:** таблица `track_sources` и поле `tracks.acoustid_fingerprint` — миграция `20260808_0005` (этап **4.2**). При download из search / CLI `import-track` всегда пишется запись в `track_sources`. Ручная загрузка (этап **4.1**) пишет `user_upload` с `recovery_priority=100` и подтверждённые публичные источники с приоритетом 10 (primary) и 20. Поля `tracks.metadata`: `album_unresolved`, `album_suggestion`, `unverified`.
 

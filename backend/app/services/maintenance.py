@@ -14,7 +14,7 @@ from app.models.catalog import Album, Artist, Track, TrackArtist, TrackSource, T
 from app.services.album_resolution import resolve_album
 from app.services.chromaprint import fingerprint_file
 from app.services.source_matching.match import find_public_candidates, source_fingerprint_ok
-from app.services.track_sources import build_track_source
+from app.services.track_sources import build_track_source, find_track_source_sync
 
 
 def cleanup_uploads() -> dict[str, int]:
@@ -160,25 +160,24 @@ def match_user_uploads(*, limit: int = 5) -> dict[str, int]:
                 for candidate in candidates:
                     if not source_fingerprint_ok(local_raw, candidate.url, work):
                         continue
-                    already = any(
-                        item.source_kind == candidate.kind and item.source_id == candidate.source_id
-                        for item in sources
+                    already = find_track_source_sync(
+                        session, track.id, candidate.kind, candidate.source_id
                     )
-                    if already:
+                    if already is not None:
                         continue
                     priority = 10 if not primary_set else 20
                     primary_set = True
-                    session.add(
-                        build_track_source(
-                            track_id=track.id,
-                            source_kind=candidate.kind,
-                            source_url=candidate.url,
-                            source_id=candidate.source_id,
-                            added_by_user_id=track.added_by_user_id,
-                            recovery_priority=priority,
-                            last_status="ok",
-                        )
+                    source = build_track_source(
+                        track_id=track.id,
+                        source_kind=candidate.kind,
+                        source_url=candidate.url,
+                        source_id=candidate.source_id,
+                        added_by_user_id=track.added_by_user_id,
+                        recovery_priority=priority,
+                        last_status="ok",
                     )
+                    session.add(source)
+                    session.flush()
                     if priority == 10 and track.source_kind in {None, "user_upload", "upload"}:
                         track.source_kind = candidate.kind
                         track.source_url = candidate.url

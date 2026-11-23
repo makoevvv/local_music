@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getTrack } from '@/api/tracks';
 import { AddToPlaylistModal } from '@/components/AddToPlaylistModal';
+import { CoverArt } from '@/components/CoverArt';
 import { LikeButton } from '@/components/LikeButton';
 import { formatArtists, formatDuration } from '@/lib/utils';
 import { usePlayerStore } from '@/store/playerStore';
@@ -48,7 +49,9 @@ export function TrackPage() {
 
       <div className="card p-6 sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-3">
+          <div className="flex gap-4">
+            <CoverArt coverUrl={track.cover_url} alt="" className="h-32 w-32 sm:h-40 sm:w-40" />
+            <div className="space-y-3">
             <h1 className="text-3xl font-semibold text-white">
               {track.title}
               {track.unverified ? (
@@ -81,6 +84,7 @@ export function TrackPage() {
                   {language.name}
                 </span>
               ))}
+            </div>
             </div>
           </div>
 

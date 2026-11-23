@@ -35,7 +35,8 @@ from app.models.catalog import (
     TrackStatus,
 )
 from app.models.user import User, UserRole
-from app.services.track_sources import build_track_source, normalize_source_kind
+from app.services.artists import get_or_create_artist
+from app.services.track_sources import build_track_source, find_track_source, normalize_source_kind
 from app.services.ytdlp import download_audio, search_entries
 
 SCHEMA_VERSION = "1.0"
@@ -565,17 +566,13 @@ class LibraryIndexService:
             track.album_id = album.id
 
         for artist_row in row.get("artists") or []:
-            artist_id = _parse_uuid(artist_row["id"]) if artist_row.get("id") else uuid.uuid4()
-            artist = await self._session.get(Artist, artist_id)
-            if artist is None:
-                artist = Artist(
-                    id=artist_id,
-                    name=artist_row.get("name") or "Unknown Artist",
-                    mbid=artist_row.get("mbid"),
-                    sort_name=artist_row.get("name"),
-                )
-                self._session.add(artist)
-                await self._session.flush()
+            raw_mbid = artist_row.get("mbid")
+            artist = await get_or_create_artist(
+                self._session,
+                str(artist_row.get("name") or "Unknown Artist"),
+                mbid=raw_mbid if isinstance(raw_mbid, str) else None,
+                artist_id=_parse_uuid(artist_row["id"]) if artist_row.get("id") else None,
+            )
             link = await self._session.get(
                 TrackArtist,
                 {
@@ -643,18 +640,13 @@ class LibraryIndexService:
 
     async def _ensure_source(self, track_id: uuid.UUID, source_row: dict[str, Any]) -> None:
         kind = normalize_source_kind(source_row.get("kind") or source_row.get("source_kind"))
-        source_id = source_row.get("source_id")
+        raw_source_id = source_row.get("source_id")
+        source_id = raw_source_id if isinstance(raw_source_id, str) else None
         source_url = source_row.get("url") or source_row.get("source_url")
-        stmt = select(TrackSource).where(
-            TrackSource.track_id == track_id,
-            TrackSource.source_kind == kind,
-        )
-        if source_id:
-            stmt = stmt.where(TrackSource.source_id == source_id)
-        elif source_url:
-            stmt = stmt.where(TrackSource.source_url == source_url)
-        existing = await self._session.scalar(stmt)
+        existing = await find_track_source(self._session, track_id, kind, source_id)
         if existing is not None:
+            if isinstance(source_url, str) and source_url and not existing.source_url:
+                existing.source_url = source_url
             return
         source = build_track_source(
             track_id=track_id,
@@ -913,16 +905,27 @@ class LibraryIndexService:
             except Exception:
                 continue
             if ok:
-                self._session.add(
-                    build_track_source(
-                        track_id=track.id,
-                        source_kind=candidate.source_kind,
-                        source_url=candidate.source_url,
-                        source_id=candidate.source_id,
-                        tier=candidate.tier,
-                        last_status="ok",
-                    )
+                existing_source = await find_track_source(
+                    self._session,
+                    track.id,
+                    candidate.source_kind,
+                    candidate.source_id,
                 )
+                if existing_source is None:
+                    self._session.add(
+                        build_track_source(
+                            track_id=track.id,
+                            source_kind=candidate.source_kind,
+                            source_url=candidate.source_url,
+                            source_id=candidate.source_id,
+                            tier=candidate.tier,
+                            last_status="ok",
+                        )
+                    )
+                else:
+                    existing_source.last_status = "ok"
+                    if candidate.source_url and not existing_source.source_url:
+                        existing_source.source_url = candidate.source_url
                 track.source_kind = candidate.source_kind
                 track.source_url = candidate.source_url
                 track.source_id = candidate.source_id

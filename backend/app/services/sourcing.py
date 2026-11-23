@@ -6,9 +6,10 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.rq_queue import get_queue
-from app.models.catalog import Artist, ArtistRole, Track, TrackArtist, TrackStatus
+from app.models.catalog import ArtistRole, Track, TrackArtist, TrackStatus
 from app.repositories.search import SearchRepository
 from app.schemas.search import FromCandidateRequest, FromCandidateResponse, TrackStatusResponse
+from app.services.artists import get_or_create_artist
 from app.services.track_sources import build_track_source
 from app.workers.tasks import download_track_job
 
@@ -31,9 +32,7 @@ class SourcingService:
         artist_name = str(data.get("artist") or "Unknown Artist")
         title = str(data.get("title") or "Unknown Track")
 
-        artist = Artist(name=artist_name, sort_name=artist_name)
-        self._session.add(artist)
-        await self._session.flush()
+        artist = await get_or_create_artist(self._session, artist_name)
 
         track = Track(
             title=title,

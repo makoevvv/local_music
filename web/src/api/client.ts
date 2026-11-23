@@ -179,29 +179,34 @@ export async function apiFormRequest<T>(path: string, form: FormData): Promise<T
   return (await response.json()) as T;
 }
 
-export async function fetchStreamBlob(trackId: string): Promise<Blob> {
-  const token = getAccessToken();
+export async function fetchAuthorizedBlob(path: string): Promise<Blob> {
   const headers: HeadersInit = {};
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
+  const url = path.startsWith('http') ? path : `${getApiBase()}${path}`;
 
-  let response = await fetch(`${getApiBase()}/api/v1/tracks/${trackId}/stream`, { headers });
+  const doFetch = () => {
+    const token = getAccessToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return fetch(url, { headers });
+  };
+
+  let response = await doFetch();
 
   if (response.status === 401) {
     const refreshed = await ensureRefreshed();
     if (refreshed) {
-      const newToken = getAccessToken();
-      if (newToken) {
-        headers.Authorization = `Bearer ${newToken}`;
-      }
-      response = await fetch(`${getApiBase()}/api/v1/tracks/${trackId}/stream`, { headers });
+      response = await doFetch();
     }
   }
 
   if (!response.ok) {
-    throw new ApiError(`Failed to stream track (${response.status})`, response.status);
+    throw new ApiError(`Failed to load ${path} (${response.status})`, response.status);
   }
 
   return response.blob();
+}
+
+export async function fetchStreamBlob(trackId: string): Promise<Blob> {
+  return fetchAuthorizedBlob(`/api/v1/tracks/${trackId}/stream`);
 }

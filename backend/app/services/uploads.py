@@ -39,6 +39,7 @@ from app.schemas.upload import (
     VerificationResult,
     overlay_meta,
 )
+from app.services.artists import get_or_create_artist
 from app.services.audio_tags import (
     ALLOWED_AUDIO_EXTENSIONS,
     ALLOWED_COVER_EXTENSIONS,
@@ -547,9 +548,7 @@ class UploadService:
     async def _create_artists(self, artists: list[ArtistInput]) -> list[tuple[Artist, ArtistRole]]:
         created: list[tuple[Artist, ArtistRole]] = []
         for item in artists:
-            artist = Artist(name=item.name, sort_name=item.name)
-            self._session.add(artist)
-            await self._session.flush()
+            artist = await get_or_create_artist(self._session, item.name)
             created.append((artist, ArtistRole(item.role)))
         return created
 
