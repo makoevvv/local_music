@@ -81,12 +81,15 @@ POST /tracks/from-candidate { candidate_id }
 ## Обогащение метаданных (`enrich_metadata`)
 
 1. Парсим title в `artist - track` (если получается).
-2. **MusicBrainz** (`musicbrainzngs` или прямой httpx, User-Agent обязателен):
-   - Поиск recording по artist+title → mbid, album, isrc, year.
+2. **MusicBrainz** — то же разрешение альбома, что и при ручной загрузке ([`14-user-upload.md`](14-user-upload.md) §2, `resolve_album`):
+   - recording mbid трека, иначе поиск artist+title со score ≥ 90;
+   - самый ранний Album или EP, либо Single, только если все release-group имеют `primary-type=Single`;
+   - иначе контейнер `Album(is_single=false, title=<track title>)` и `metadata.album_unresolved=true`, чтобы `reconcile_albums` повторил попытку;
+   - уже заданный `album_id` не перезаписывается.
 3. **Last.fm** (если ключ задан): теги/жанры по mbid или artist+title.
 4. **Lyrics-проверка** (опц.): если есть текст — `has_lyrics=true`, иначе пометить `instrumental`. На MVP — по тегам/жанрам (genre in {ambient, classical, soundtrack, post-rock} → возможный инструментал).
-5. Создаём/находим связанные `Artist`, `Album`, `Genre`. Связываем.
-6. Сохраняем обложку: `albums.cover_path` (берём из MusicBrainz Cover Art Archive, fallback — thumbnail с YouTube).
+5. Находим `Album` по mbid release-group или создаём его и связываем с уже существующим исполнителем трека. Жанры связываем отдельно.
+6. URL обложки из Cover Art Archive пишется в `albums.metadata.cover_url`. Thumbnail источника в `tracks.cover_url_origin` не затирается.
 
 ## Аудио-фичи (`compute_audio_features`, опц.)
 

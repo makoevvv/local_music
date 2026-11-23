@@ -58,7 +58,7 @@ CREATE UNIQUE INDEX users_single_master_idx ON users ((1)) WHERE is_master = tru
 | mbid | text unique null |
 | release_year | int null |
 | cover_path | text null |
-| is_single | bool default false | сингл-альбом, созданный автоматически при ручной загрузке трека без альбома |
+| is_single | bool default false | true только если MusicBrainz подтвердил primary-type=Single (ручная загрузка и скачивание из поиска) |
 | metadata | jsonb default '{}' |
 
 ### `genres`

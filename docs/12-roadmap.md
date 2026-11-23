@@ -65,7 +65,7 @@
 - [x] Эндпоинт `/search` с кешем (Redis + `search_candidates`).
 - [x] Эндпоинт `/tracks/from-candidate`, `/tracks/{id}/status`.
 - [x] RQ-воркер: `download_track`, дедупликация по `audio_sha256`.
-- [x] Обогащение метаданных: MusicBrainz, Last.fm (best-effort, не блокирует `ready`).
+- [x] Обогащение метаданных: MusicBrainz (то же разрешение альбома, что в этапе 4.1), Last.fm (best-effort, не блокирует `ready`).
 - [x] WebSocket уведомления о статусе (`/api/v1/ws/tracks`).
 - [x] Web UI: Search, выбор кандидата, прогресс.
 - [x] Инфра: сервис `ytdlp-pot` (PO Token, без cookies браузера); опционально VPN — профиль `proxy` + `YTDLP_PROXY` (см. [`infra/proxy/README.md`](../infra/proxy/README.md)).
