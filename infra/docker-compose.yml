@@ -56,6 +56,7 @@ services:
       - "${APP_PORT:-8000}:8000"
     volumes:
       - ../data/storage:/data/storage
+      - ../data/exports:/data/exports
     depends_on:
       postgres:
         condition: service_healthy
@@ -78,6 +79,7 @@ services:
     command: ["rq", "worker", "default", "--url", "redis://redis:6379/0"]
     volumes:
       - ../data/storage:/data/storage
+      - ../data/exports:/data/exports
     depends_on:
       postgres:
         condition: service_healthy

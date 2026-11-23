@@ -6,47 +6,45 @@
 
 ## 🎯 Что нужно сделать
 
-**Рекомендация:** сначала **этап 4.2** (Index & Restore), затем **4.1** (ручная загрузка). См. §«Почему 4.2 раньше 4.1» ниже.
+Этап **4.1** — ручная загрузка треков и верификация ([`docs/14-user-upload.md`](docs/14-user-upload.md:1), [`docs/12-roadmap.md`](docs/12-roadmap.md:79)).
 
-Этап 4 (search + download) закрыт — архив: [`docs/tasks-archive/2026-05-27-stage-4-search-download.md`](docs/tasks-archive/2026-05-27-stage-4-search-download.md:1).
+Этапы 4 и 4.2 закрыты в ветках/PR (search/download + library index). Перед 4.1 убедись, что `stage/4-search-download` и 4.2 вмержены или работай поверх актуальной feature-ветки с `track_sources`.
 
 ---
 
 ## 🤔 Зачем
 
-После этапа 4 треки есть в каталоге, но **library index** (`track_sources`, export/import) ещё нет — при переносе сервера восстановление по источникам ограничено полями `tracks.source_*`.
+Пользователь должен иметь возможность загрузить локальный файл, получить предложения метаданных (AcoustID/MusicBrainz) и публичные источники для индекса, подтвердить трек в библиотеке.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/16-library-index-and-restore.md`](docs/16-library-index-and-restore.md:1)
-- [`docs/12-roadmap.md`](docs/12-roadmap.md:95) §«Этап 4.2»
-- [`docs/04-database-schema.md`](docs/04-database-schema.md:124) §`track_sources`
+- [`docs/14-user-upload.md`](docs/14-user-upload.md:1)
+- [`docs/16-library-index-and-restore.md`](docs/16-library-index-and-restore.md:1) — `track_sources` уже есть
+- [`docs/06-music-sourcing.md`](docs/06-music-sourcing.md:1) — tier / recovery_priority
+- Архив 4.2: [`docs/tasks-archive/2026-08-08-stage-4-2-index-restore.md`](docs/tasks-archive/2026-08-08-stage-4-2-index-restore.md:1)
 
 ---
 
-## ✅ Критерии готовности (этап 4.2, кратко)
+## ✅ Критерии готовности (кратко)
 
-- [ ] Миграция `track_sources` + запись при download/upload.
-- [ ] CLI `index export` / `index import` / `library restore`.
-- [ ] Admin API `/admin/index/*` (master).
-- [ ] DoD: восстановление библиотеки из дампа на чистом сервере.
+Из roadmap §4.1:
+
+- [ ] `/tracks/upload`, verify, confirm
+- [ ] mutagen + fpcalc/AcoustID
+- [ ] trust levels, album resolution
+- [ ] source matching → `track_sources`
+- [ ] UI загрузки и карточка верификации
 
 ---
 
 ## 🚧 Ограничения и нюансы
 
-- На этапе 4 **не** писали в `track_sources` — это нормально; backfill при внедрении 4.2.
-- Коммит/PR этапа 4 — по запросу владельца.
+- Не ломать library index (4.2): upload обязан писать `user_upload` (+ публичные источники).
+- Ветка: от актуального tip с этапами 4+4.2.
 
 ---
-
-## Почему 4.2 раньше 4.1
-
-1. Уже есть треки из Search — им нужен `track_sources` и export, иначе перенос/бэкап библиотеки слабый.
-2. Этап 4.1 в спецификации **сразу пишет в `track_sources`** — проще один раз сделать таблицу в 4.2, чем потом переделывать upload.
-3. 4.1 (AcoustID, upload UI) — отдельный большой блок; его можно строить поверх готового индекса.
 
 ## ❓ Открытые вопросы
 
@@ -62,4 +60,4 @@
 
 ## 📝 Лог работы по задаче
 
-—
+- Этап 4.2 реализован: миграция `track_sources`, CLI index/library, admin API, schema, export cron script.

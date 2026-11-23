@@ -11,7 +11,9 @@ def test_ytdlp_base_opts_without_proxy() -> None:
     with patch.object(settings, "ytdlp_proxy", None):
         opts = _ytdlp_base_opts()
     assert "proxy" not in opts
-    assert opts["extractor_args"]["youtubepot-bgutilhttp"]["base_url"] == settings.ytdlp_pot_base_url
+    assert (
+        opts["extractor_args"]["youtubepot-bgutilhttp"]["base_url"] == settings.ytdlp_pot_base_url
+    )
 
 
 def test_ytdlp_base_opts_with_proxy() -> None:

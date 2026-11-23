@@ -65,16 +65,17 @@ POST /tracks/from-candidate { candidate_id }
 ```
 
 1. Backend читает candidate из кеша.
-2. Создаёт запись `Track(status=downloading, ...)` с базовыми полями.
-3. Ставит задачу `download_track(track_id, candidate)` в RQ.
-4. Возвращает `{track_id}`.
+2. Создаёт запись `Track(status=downloading, ...)` с базовыми полями (`source_*`, `cover_url_origin`).
+3. Пишет запись в `track_sources` с `recovery_priority` по tier кандидата (см. [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1)).
+4. Ставит задачу `download_track(track_id, candidate)` в RQ.
+5. Возвращает `{track_id}`.
 
 Воркер:
 1. `yt-dlp --extract-audio --audio-format opus --audio-quality 96K -o /tmp/{tmp_id}.%(ext)s <url>`.
-2. Считаем `audio_sha256` (хеш файла после транскода). Если такой уже есть → удаляем временный, ссылаемся на существующий Track, новый помечаем `merged_into=<id>` либо удаляем.
+2. Считаем `audio_sha256` (хеш файла после транскода). Если такой уже есть → удаляем временный, ссылаемся на существующий Track, новый помечаем `merged_into=<id>` либо удаляем; `track_sources.last_status='checksum_mismatch'`.
 3. ffprobe → реальная длительность, битрейт.
 4. Перемещаем файл в `storage/tracks/{id[:2]}/{id}.opus`.
-5. Обновляем `Track.status='ready'`.
+5. Обновляем `Track.status='ready'`, `track_sources.last_status='ok'`.
 6. Ставим задачу `enrich_metadata`.
 
 ## Обогащение метаданных (`enrich_metadata`)

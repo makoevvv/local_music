@@ -24,6 +24,7 @@
 | [`15-master-account.md`](15-master-account.md:1) | Мастер-аккаунт (owner): правила и реализация |
 | [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1) | Индекс библиотеки и восстановление при переносе |
 | [`17-external-imports.md`](17-external-imports.md:1) | Импорт треков/плейлистов из Spotify, Yandex, Apple Music и т.д. |
+| [`schemas/library.schema.json`](schemas/library.schema.json) | JSON Schema строки трека в library index export |
 | [`adr/`](adr/) | Architecture Decision Records — записи о ключевых решениях |
 
 ## Правила работы с документацией

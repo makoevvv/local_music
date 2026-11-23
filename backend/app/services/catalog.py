@@ -42,6 +42,7 @@ from app.schemas.catalog import (
     TrackListItem,
     TrackListResponse,
 )
+from app.services.track_sources import build_track_source
 
 
 def _artist_briefs(track: Track) -> list[ArtistBrief]:
@@ -226,7 +227,7 @@ class CatalogService:
             file_path="pending",
             status=TrackStatus.ready,
             added_by_user_id=added_by_user_id,
-            source_kind="upload",
+            source_kind="user_upload",
         )
         await self._catalog.add(track)
         relative, extension, size, digest = copy_track_file(source_file, track.id)
@@ -237,6 +238,15 @@ class CatalogService:
         track.updated_at = datetime.now(UTC)
         self._session.add(
             TrackArtist(track_id=track.id, artist_id=artist.id, role=ArtistRole.main, position=0)
+        )
+        self._session.add(
+            build_track_source(
+                track_id=track.id,
+                source_kind="user_upload",
+                added_by_user_id=added_by_user_id,
+                original_filename=source_file.name,
+                last_status="ok",
+            )
         )
         await self._session.commit()
         await self._session.refresh(track)

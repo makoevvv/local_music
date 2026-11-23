@@ -1,5 +1,7 @@
 name: Backend CI
 
+# Runs on pull requests into main.
+
 on:
   push:
     branches: [main, "stage/**"]

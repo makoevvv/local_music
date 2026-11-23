@@ -15,6 +15,7 @@ from app.models.catalog import (
     TrackArtist,
     TrackGenre,
     TrackLanguage,
+    TrackSource,
     TrackStatus,
 )
 from app.models.invite import Invite
@@ -42,6 +43,7 @@ __all__ = [
     "TrackArtist",
     "TrackGenre",
     "TrackLanguage",
+    "TrackSource",
     "TrackStatus",
     "User",
     "UserRole",

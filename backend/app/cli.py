@@ -5,6 +5,7 @@ import asyncio
 import getpass
 import sys
 from collections.abc import Awaitable, Callable
+from pathlib import Path
 from typing import TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -49,6 +50,34 @@ def _build_parser() -> argparse.ArgumentParser:
     import_track.add_argument("--artist", required=True)
     import_track.add_argument("--album", default=None)
     import_track.add_argument("--user-id", required=True)
+
+    index_parser = subparsers.add_parser("index", help="Library index export/import")
+    index_sub = index_parser.add_subparsers(dest="index_command", required=True)
+
+    index_export = index_sub.add_parser("export", help="Export library index")
+    index_export.add_argument("--out", required=True)
+    index_export.add_argument("--minimal", action="store_true")
+    index_export.add_argument("--include-covers", action="store_true")
+    index_export.add_argument("--include-secrets", action="store_true")
+    index_export.add_argument("--no-plays", action="store_true")
+
+    index_import = index_sub.add_parser("import", help="Import library index")
+    index_import.add_argument("--in", dest="archive", required=True)
+    index_import.add_argument(
+        "--mode",
+        choices=["skip-existing", "overwrite", "mirror"],
+        default="skip-existing",
+    )
+
+    library_parser = subparsers.add_parser("library", help="Library restore operations")
+    library_sub = library_parser.add_subparsers(dest="library_command", required=True)
+    library_restore = library_sub.add_parser("restore", help="Restore audio from track_sources")
+    library_restore.add_argument("--strategy", default="best-source-first")
+    library_restore.add_argument("--concurrency", type=int, default=2)
+    library_restore.add_argument("--dry-run", action="store_true")
+
+    verify = subparsers.add_parser("verify-sources", help="Probe track_sources availability")
+    verify.add_argument("--limit", type=int, default=200)
 
     return parser
 
@@ -148,7 +177,6 @@ async def _cmd_reset_master_password(args: argparse.Namespace) -> int:
 
 async def _cmd_import_track(args: argparse.Namespace) -> int:
     import uuid
-    from pathlib import Path
 
     from app.models.catalog import Track
     from app.services.catalog import CatalogService
@@ -173,6 +201,76 @@ async def _cmd_import_track(args: argparse.Namespace) -> int:
     return 0
 
 
+async def _cmd_index_export(args: argparse.Namespace) -> int:
+    from app.services.library_index import ExportOptions, LibraryIndexService
+
+    out = Path(args.out)
+
+    async def run(session: AsyncSession) -> str:
+        result = await LibraryIndexService(session).export_index(
+            ExportOptions(
+                out=out,
+                minimal=args.minimal,
+                include_covers=args.include_covers,
+                include_secrets=args.include_secrets,
+                no_plays=args.no_plays,
+            )
+        )
+        return f"{result.path} tracks={result.track_count} sha256={result.sha256}"
+
+    message = await _with_session(run)
+    print(message)
+    return 0
+
+
+async def _cmd_index_import(args: argparse.Namespace) -> int:
+    from app.services.library_index import LibraryIndexService
+
+    archive = Path(args.archive)
+    if not archive.exists():
+        print(f"Archive not found: {archive}", file=sys.stderr)
+        return 1
+
+    async def run(session: AsyncSession) -> str:
+        result = await LibraryIndexService(session).import_index(archive, mode=args.mode)
+        return (
+            f"imported={result.imported_tracks} skipped={result.skipped_tracks} "
+            f"overwritten={result.overwritten_tracks} sha256_mapped={result.sha256_mapped}"
+        )
+
+    message = await _with_session(run)
+    print(message)
+    return 0
+
+
+async def _cmd_library_restore(args: argparse.Namespace) -> int:
+    from app.services.library_index import LibraryIndexService
+
+    async def run(session: AsyncSession) -> str:
+        result = await LibraryIndexService(session).restore_library(
+            strategy=args.strategy,
+            concurrency=args.concurrency,
+            dry_run=args.dry_run,
+        )
+        return (
+            f"attempted={result.attempted} restored={result.restored} "
+            f"unrecoverable={result.unrecoverable} skipped={result.skipped} "
+            f"dry_run={result.dry_run}"
+        )
+
+    message = await _with_session(run)
+    print(message)
+    return 0
+
+
+def _cmd_verify_sources(args: argparse.Namespace) -> int:
+    from app.workers.tasks import verify_sources_job
+
+    result = verify_sources_job(limit=args.limit)
+    print(f"checked={result['checked']} updated={result['updated']}")
+    return 0
+
+
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
@@ -185,6 +283,14 @@ def main() -> None:
         raise SystemExit(asyncio.run(_cmd_reset_master_password(args)))
     if args.command == "import-track":
         raise SystemExit(asyncio.run(_cmd_import_track(args)))
+    if args.command == "index" and args.index_command == "export":
+        raise SystemExit(asyncio.run(_cmd_index_export(args)))
+    if args.command == "index" and args.index_command == "import":
+        raise SystemExit(asyncio.run(_cmd_index_import(args)))
+    if args.command == "library" and args.library_command == "restore":
+        raise SystemExit(asyncio.run(_cmd_library_restore(args)))
+    if args.command == "verify-sources":
+        raise SystemExit(_cmd_verify_sources(args))
 
     parser.print_help()
     raise SystemExit(1)

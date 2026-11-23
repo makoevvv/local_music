@@ -90,7 +90,7 @@ CREATE UNIQUE INDEX users_single_master_idx ON users ((1)) WHERE is_master = tru
 | bpm | float null |
 | energy | float null | 0..1 |
 | valence | float null | 0..1 (грусть/радость) |
-| status | enum('downloading','ready','failed','blocked') default 'downloading' |
+| status | enum('downloading','ready','failed','blocked','unrecoverable') default 'downloading' |
 | added_by_user_id | uuid FK users.id |
 | play_count | int default 0 | денормализованное |
 | acoustid_fingerprint | text null | chromaprint fingerprint для восстановления |
@@ -143,7 +143,7 @@ PK: (track_id, language_id)
 - `idx_track_sources_track` (`track_id`).
 - `idx_track_sources_kind_status` (`source_kind`, `last_status`).
 
-> **Статус реализации:** таблица `track_sources` — этап **4.2** (ещё нет в миграциях). На этапе **4** при скачивании из search заполняются только denormalized поля `tracks.source_kind`, `tracks.source_id`, `tracks.source_url`, `tracks.cover_url_origin`. После 4.2 — дублируем/нормализуем в `track_sources` и backfill для существующих треков.
+> **Статус реализации:** таблица `track_sources` и поле `tracks.acoustid_fingerprint` — миграция `20260808_0005` (этап **4.2**). При download из search / CLI `import-track` всегда пишется запись в `track_sources`; denormalized `tracks.source_*` остаются для UI. Backfill из `tracks.source_*` выполняется в той же миграции.
 
 ### `playlists`
 | id | uuid PK |

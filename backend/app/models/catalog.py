@@ -28,6 +28,7 @@ class TrackStatus(str, enum.Enum):
     ready = "ready"
     failed = "failed"
     blocked = "blocked"
+    unrecoverable = "unrecoverable"
 
 
 class ArtistRole(str, enum.Enum):
@@ -131,6 +132,7 @@ class Track(Base):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
     )
     play_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    acoustid_fingerprint: Mapped[str | None] = mapped_column(Text, nullable=True)
     cover_url_origin: Mapped[str | None] = mapped_column(String, nullable=True)
     metadata_: Mapped[dict[str, Any]] = mapped_column(
         "metadata", JSONB, nullable=False, server_default="{}"
@@ -142,6 +144,40 @@ class Track(Base):
 
     album: Mapped[Album | None] = relationship("Album")
     artists: Mapped[list[TrackArtist]] = relationship(back_populates="track")
+    sources: Mapped[list[TrackSource]] = relationship(
+        back_populates="track",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+
+class TrackSource(Base):
+    __tablename__ = "track_sources"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    track_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("tracks.id", ondelete="CASCADE"), nullable=False
+    )
+    source_kind: Mapped[str] = mapped_column(String, nullable=False)
+    source_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    original_filename: Mapped[str | None] = mapped_column(String, nullable=True)
+    original_tags: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default="{}"
+    )
+    added_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
+    )
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    recovery_priority: Mapped[int] = mapped_column(Integer, nullable=False, server_default="100")
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_status: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    track: Mapped[Track] = relationship(back_populates="sources")
 
 
 class TrackArtist(Base):

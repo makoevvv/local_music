@@ -11,7 +11,7 @@
 
 Индекс — это **отдельная сущность от storage**: storage можно потерять, индекс достаточно, чтобы пересобрать библиотеку.
 
-> **Этап 4 (search/download):** индекс **ещё не ведётся**. Источник сохраняется в `tracks.source_*`. Запись в `track_sources` и CLI `index export/import` — **этап 4.2** ([`12-roadmap.md`](12-roadmap.md:95)).
+> **Реализация (этап 4.2):** миграция `20260808_0005`, модель `TrackSource`, CLI `index export|import` / `library restore` / `verify-sources`, admin API `/admin/index/*` и `/admin/library/*`. Схема строки трека — [`schemas/library.schema.json`](schemas/library.schema.json).
 
 ## 2. Схема данных
 
@@ -136,8 +136,8 @@ docker compose exec backend python -m app.cli library restore \
 ## 6. Минимальный «portable» режим
 
 Для случая «хочу взять только индекс с собой, без сервера»:
-- Утилита `python -m app.cli index export --minimal` создаёт один файл `library.jsonl.gz`.
-- Файл валидирует JSON-схемой (положим её в `docs/schemas/library.schema.json` — TODO в этапе 4.2).
+- Утилита `python -m app.cli index export --minimal` создаёт один файл `library-*.jsonl.gz` (+ sidecar `*.manifest.json`).
+- Строка трека валидируется JSON-схемой [`docs/schemas/library.schema.json`](schemas/library.schema.json).
 
 ## 7. Расширения (на будущее)
 - Подпись манифеста (HMAC секретом master) — защита от подмены при переносе.
