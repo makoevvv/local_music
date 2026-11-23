@@ -65,6 +65,7 @@ data/
 *.wav
 
 # DB
+backups/
 *.sqlite
 *.sqlite3
 *.db
