@@ -18,6 +18,8 @@ from app.models.catalog import (
     TrackGenre,
     TrackStatus,
 )
+from app.schemas.upload import AlbumResolution
+from app.services.album_resolution import resolve_album
 
 
 def _external_http_client(*, timeout: float) -> httpx.Client:
@@ -25,24 +27,6 @@ def _external_http_client(*, timeout: float) -> httpx.Client:
     if settings.ytdlp_proxy:
         kwargs["proxy"] = settings.ytdlp_proxy
     return httpx.Client(**kwargs)
-
-
-def _fetch_musicbrainz(artist: str, title: str) -> dict[str, Any] | None:
-    query = f'recording:"{title}" AND artist:"{artist}"'
-    headers = {"User-Agent": settings.musicbrainz_user_agent}
-    try:
-        with _external_http_client(timeout=15.0) as client:
-            response = client.get(
-                "https://musicbrainz.org/ws/2/recording",
-                params={"query": query, "fmt": "json", "limit": 1},
-                headers=headers,
-            )
-            if response.status_code != 200:
-                return None
-            recordings = response.json().get("recordings", [])
-            return recordings[0] if recordings else None
-    except Exception:
-        return None
 
 
 def _fetch_lastfm_tags(artist: str, title: str) -> list[str]:
@@ -80,46 +64,76 @@ def _slugify(value: str) -> str:
     return slug or "unknown"
 
 
+def _main_artist(session: Session, track: Track) -> tuple[str, uuid.UUID | None]:
+    links = session.execute(
+        select(TrackArtist).where(TrackArtist.track_id == track.id).order_by(TrackArtist.position)
+    ).scalars()
+    for link in links:
+        artist = session.get(Artist, link.artist_id)
+        if artist is not None and artist.name.strip():
+            return artist.name, artist.id
+    return "", None
+
+
+def _album_for_decision(
+    session: Session,
+    decision: AlbumResolution,
+    artist_id: uuid.UUID | None,
+) -> Album:
+    if decision.release_group_mbid:
+        existing = session.scalar(select(Album).where(Album.mbid == decision.release_group_mbid))
+        if existing is not None:
+            return existing
+    album = Album(
+        title=decision.title,
+        primary_artist_id=artist_id,
+        mbid=decision.release_group_mbid,
+        release_year=decision.release_year,
+        is_single=decision.is_single,
+    )
+    if decision.cover_url:
+        album.metadata_ = {"cover_url": decision.cover_url}
+    session.add(album)
+    session.flush()
+    return album
+
+
+def _apply_album_resolution(
+    session: Session,
+    track: Track,
+    decision: AlbumResolution,
+    artist_id: uuid.UUID | None,
+) -> None:
+    track.album_id = _album_for_decision(session, decision, artist_id).id
+    meta = dict(track.metadata_ or {})
+    if decision.unresolved:
+        meta["album_unresolved"] = True
+    else:
+        meta.pop("album_unresolved", None)
+    track.metadata_ = meta
+    if decision.recording_mbid and not track.mbid:
+        clash = session.scalar(select(Track).where(Track.mbid == decision.recording_mbid))
+        if clash is None:
+            track.mbid = decision.recording_mbid
+    if decision.cover_url and not track.cover_url_origin:
+        track.cover_url_origin = decision.cover_url
+
+
 def _enrich_track_metadata_impl(session: Session, track_id: uuid.UUID) -> None:
     track = session.get(Track, track_id)
     if track is None or track.status != TrackStatus.ready:
         return
 
-    main_artist_name = track.title
-    artist_links = session.execute(
-        select(TrackArtist).where(TrackArtist.track_id == track.id).order_by(TrackArtist.position)
-    ).scalars()
-    for link in artist_links:
-        artist = session.get(Artist, link.artist_id)
-        if artist is not None:
-            main_artist_name = artist.name
-            break
+    artist_name, artist_id = _main_artist(session, track)
+    if track.album_id is None:
+        decision = resolve_album(
+            artist=artist_name,
+            title=track.title,
+            recording_mbid=track.mbid,
+        )
+        _apply_album_resolution(session, track, decision, artist_id)
 
-    recording = _fetch_musicbrainz(main_artist_name, track.title)
-    if recording:
-        track.mbid = recording.get("id")
-        releases = recording.get("releases") or []
-        if releases and track.album_id is None:
-            release = releases[0]
-            album_title = release.get("title") or track.title
-            release_year = None
-            date = release.get("date") or ""
-            if len(date) >= 4 and date[:4].isdigit():
-                release_year = int(date[:4])
-            artist_entity = Artist(name=main_artist_name, sort_name=main_artist_name)
-            session.add(artist_entity)
-            session.flush()
-            album = Album(
-                title=album_title,
-                primary_artist_id=artist_entity.id,
-                release_year=release_year,
-                is_single=False,
-            )
-            session.add(album)
-            session.flush()
-            track.album_id = album.id
-
-    tags = _fetch_lastfm_tags(main_artist_name, track.title)
+    tags = _fetch_lastfm_tags(artist_name or track.title, track.title)
     for tag_name in tags:
         slug = _slugify(tag_name)
         genre = session.execute(select(Genre).where(Genre.slug == slug)).scalar_one_or_none()
