@@ -18,6 +18,7 @@ from app.models.catalog import (
     TrackSource,
     TrackStatus,
 )
+from app.models.imports import ExternalAccount, ImportItem, ImportJob
 from app.models.invite import Invite
 from app.models.refresh_token import RefreshToken
 from app.models.search import SearchCandidate
@@ -29,7 +30,10 @@ __all__ = [
     "ArtistRole",
     "AuditLog",
     "Base",
+    "ExternalAccount",
     "Genre",
+    "ImportItem",
+    "ImportJob",
     "Invite",
     "Language",
     "Like",

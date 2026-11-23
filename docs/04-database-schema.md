@@ -152,6 +152,7 @@ PK: (track_id, language_id)
 | is_favourite | bool default false | признак «Любимое», уникален на пользователя |
 | is_public | bool default false |
 | cover_path | text null |
+| metadata | jsonb default `{}` | импорт: `import.provider`, `import.external_id`, `import.imported_at` |
 | created_at, updated_at | timestamptz |
 
 Constraint: `UNIQUE (owner_id) WHERE is_favourite = true`.

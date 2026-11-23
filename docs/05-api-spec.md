@@ -131,6 +131,8 @@
 
 Полная спецификация — [`17-external-imports.md`](17-external-imports.md:1).
 
+Этап 4.3: `POST /import/file`, `GET /import/spotify/connect`, `GET /import/callback/spotify`, `POST /import/connect/yandex`, `POST /import/{provider}/start`, jobs/items/resolve. Apple Music не реализован.
+
 | Метод | Путь | Описание |
 |---|---|---|
 | GET    | `/import/providers` | Список доступных провайдеров и их статус для текущего пользователя. |

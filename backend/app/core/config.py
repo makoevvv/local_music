@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     upload_cover_max_bytes: int = 5_242_880
     upload_session_ttl_seconds: int = 1800
     verification_cache_ttl_seconds: int = 86_400
+    spotify_client_id: str | None = None
+    spotify_client_secret: str | None = None
+    spotify_redirect_uri: str = "http://localhost:8000/api/v1/import/callback/spotify"
+    spotify_redirect_web: str = "http://localhost:3000/import"
+    external_tokens_key: str | None = None
 
     @property
     def cors_origin_list(self) -> list[str]:
