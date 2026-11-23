@@ -92,11 +92,7 @@ docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d -
 
 ## Бэкапы
 
-1. **БД** — ежедневный `pg_dump`:
-   ```bash
-   # infra/scripts/backup_db.sh
-   docker compose exec -T postgres pg_dump -U $POSTGRES_USER $POSTGRES_DB | gzip > backups/db_$(date +%F).sql.gz
-   ```
+1. **БД** — ежедневный `pg_dump` скриптом [`infra/scripts/backup_db.sh`](../infra/scripts/backup_db.sh). Он берёт `POSTGRES_USER` и `POSTGRES_DB` из окружения или из `.env`, пишет `backups/db_YYYY-MM-DD.sql.gz` и удаляет дампы старше 7 дней. Каталог `backups/` в git не входит.
 2. **Аудио** — `rsync -a data/storage/ /Volumes/ExternalBackup/local-music/storage/`.
 3. **Library index** (см. [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1)) — переносимый дамп метаданных + источников:
    ```bash
@@ -107,12 +103,15 @@ docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d -
    docker compose exec -T backend python -m app.cli index export --include-covers \
      --out /data/exports/library-full-$(date +%F).tar.gz
    ```
-4. Запуск из `launchd` или `crontab -e`:
-   ```
-   0 3 * * *  cd ~/srv/local-music && ./infra/scripts/backup_db.sh
-   15 3 * * * cd ~/srv/local-music && ./infra/scripts/export_index.sh
-   30 4 * * * cd ~/srv/local-music && ./infra/scripts/library_maintenance.sh
-   ```
+4. Расписание уже лежит в репозитории. Часы — локальные часы сервера.
+   - cron: [`infra/cron/local-music`](../infra/cron/local-music). Установка из корня клона: `crontab infra/cron/local-music`. Если cron не раскрывает `~`, подставь абсолютный путь вместо `~/srv/local-music`.
+   - launchd (macOS): шаблоны в [`infra/launchd/`](../infra/launchd/). Подставь путь клона вместо `__REPO_ROOT__` и загрузи агенты:
+     ```bash
+     sed "s#__REPO_ROOT__#$PWD#g" infra/launchd/com.localmusic.backup-db.plist \
+       > ~/Library/LaunchAgents/com.localmusic.backup-db.plist
+     launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.localmusic.backup-db.plist
+     ```
+     Так же для `com.localmusic.export-index` (03:15) и `com.localmusic.library-maintenance` (04:30).
 5. Хранить не менее 7 ежедневных + 4 еженедельных. Индекс компактный (мегабайты) — копию рекомендуется держать вне сервера (приватный репо/облако/флешка).
 
 ## Логи и мониторинг

@@ -160,7 +160,7 @@
 ## Этап 7. Полировка и стабилизация
 - [x] Cloudflare Tunnel: сервис `cloudflared` в профиле `edge`, токен в `CLOUDFLARE_TUNNEL_TOKEN` (логин в Cloudflare — у владельца).
 - [x] HTTPS + Caddy в продакшн-варианте (`infra/Caddyfile`, профиль `edge`).
-- [ ] Бэкапы по расписанию.
+- [x] Бэкапы по расписанию (`infra/scripts/backup_db.sh`, cron и launchd).
 - [ ] Мониторинг (Uptime Kuma).
 - [ ] Логи структурированы (JSON).
 - [ ] Покрытие тестами критичных модулей ≥ 60%.

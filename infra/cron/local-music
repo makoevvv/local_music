@@ -1,0 +1,6 @@
+# Local Music schedule. Times use the server clock.
+# Install from the repo root: crontab infra/cron/local-music
+# If this cron does not expand ~, replace it with the absolute path of the clone.
+0 3 * * *  cd ~/srv/local-music && ./infra/scripts/backup_db.sh
+15 3 * * * cd ~/srv/local-music && ./infra/scripts/export_index.sh
+30 4 * * * cd ~/srv/local-music && ./infra/scripts/library_maintenance.sh
