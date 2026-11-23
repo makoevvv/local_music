@@ -70,6 +70,7 @@ def _track_list_item(track: Track, sentiment: LikeSentiment | None = None) -> Tr
         has_lyrics=track.has_lyrics,
         artists=_artist_briefs(track),
         album=album,
+        unverified=bool((track.metadata_ or {}).get("unverified")),
         user_sentiment=sentiment,
     )
 
@@ -152,6 +153,10 @@ class CatalogService:
             "mp3": "audio/mpeg",
             "opus": "audio/opus",
             "m4a": "audio/mp4",
+            "aac": "audio/aac",
+            "flac": "audio/flac",
+            "ogg": "audio/ogg",
+            "wav": "audio/wav",
         }.get(track.file_format or "mp3", "application/octet-stream")
         return FileResponse(
             path=file_path,
@@ -218,7 +223,7 @@ class CatalogService:
         await self._catalog.add(artist)
         album = None
         if album_title:
-            album = Album(title=album_title, primary_artist_id=artist.id, is_single=True)
+            album = Album(title=album_title, primary_artist_id=artist.id, is_single=False)
             await self._catalog.add(album)
 
         track = Track(

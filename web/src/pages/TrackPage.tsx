@@ -49,7 +49,14 @@ export function TrackPage() {
       <div className="card p-6 sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-3">
-            <h1 className="text-3xl font-semibold text-white">{track.title}</h1>
+            <h1 className="text-3xl font-semibold text-white">
+              {track.title}
+              {track.unverified ? (
+                <span className="ml-3 align-middle text-xs uppercase tracking-wide text-amber-400">
+                  unverified
+                </span>
+              ) : null}
+            </h1>
             <p className="text-lg text-zinc-400">{formatArtists(track.artists)}</p>
             {track.album && (
               <p className="text-sm text-zinc-500">

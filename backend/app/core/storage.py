@@ -30,6 +30,14 @@ def resolve_track_file(relative_path: str) -> Path:
     return resolved
 
 
+def save_cover_file(owner_id: uuid.UUID, source: Path) -> str:
+    extension = source.suffix.lstrip(".") or "jpg"
+    destination = storage_root() / "covers" / f"{owner_id}.{extension}"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, destination)
+    return str(destination.relative_to(storage_root()))
+
+
 def copy_track_file(source: Path, track_id: uuid.UUID) -> tuple[str, str, int, str]:
     extension = source.suffix.lstrip(".") or "mp3"
     destination = track_storage_path(track_id, extension)

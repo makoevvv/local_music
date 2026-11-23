@@ -69,6 +69,11 @@ export function TrackRow({ track, index, showIndex = false, onPlay, onRemove }: 
             className={cn('block truncate font-medium', isActive ? 'text-accent' : 'text-white')}
           >
             {track.title}
+            {track.unverified ? (
+              <span className="ml-2 align-middle text-[10px] uppercase tracking-wide text-amber-400">
+                unverified
+              </span>
+            ) : null}
           </Link>
           <p className="truncate text-sm text-zinc-400">{formatArtists(track.artists)}</p>
         </div>

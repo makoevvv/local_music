@@ -41,7 +41,7 @@
    - Берём top-1 recording с высоким score (≥ 90).
    - Повторяем шаг 2.
 4. **Fallback (если уверенно определить альбом не удалось)**:
-   - Не выдумываем альбом. Создаём `Album(is_single=true, title=<track title>)`.
+   - Не выдумываем альбом. Создаём контейнер `Album(is_single=false, title=<track title>)`. Флаг `is_single` остаётся `false`, пока MusicBrainz явно не подтвердит Single (см. ниже).
    - Трек помечается флагом `metadata.album_unresolved=true` (jsonb в `tracks.metadata`), чтобы потом фоновая задача `reconcile_albums` могла повторить попытку.
 5. **Найденный альбом**:
    - Ищем существующий `Album` по `mbid` (release-group). Если есть — переиспользуем.

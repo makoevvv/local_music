@@ -137,6 +137,48 @@ export async function apiRequest<T>(
   return (await response.json()) as T;
 }
 
+export async function apiFormRequest<T>(path: string, form: FormData): Promise<T> {
+  const requestHeaders = new Headers();
+  const token = getAccessToken();
+  if (token) {
+    requestHeaders.set('Authorization', `Bearer ${token}`);
+  }
+
+  const doFetch = () =>
+    fetch(buildUrl(path), {
+      method: 'POST',
+      headers: requestHeaders,
+      body: form,
+    });
+
+  let response = await doFetch();
+  if (response.status === 401) {
+    const refreshed = await ensureRefreshed();
+    if (refreshed) {
+      const nextToken = getAccessToken();
+      if (nextToken) {
+        requestHeaders.set('Authorization', `Bearer ${nextToken}`);
+      }
+      response = await doFetch();
+    }
+  }
+
+  if (!response.ok) {
+    let problem: ApiProblem | undefined;
+    const contentType = response.headers.get('content-type') ?? '';
+    if (contentType.includes('application/json') || contentType.includes('application/problem+json')) {
+      problem = (await response.json()) as ApiProblem;
+    }
+    throw new ApiError(
+      problem?.detail ?? problem?.title ?? `Request failed (${response.status})`,
+      response.status,
+      problem,
+    );
+  }
+
+  return (await response.json()) as T;
+}
+
 export async function fetchStreamBlob(trackId: string): Promise<Blob> {
   const token = getAccessToken();
   const headers: HeadersInit = {};

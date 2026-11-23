@@ -9,7 +9,7 @@ on:
       - "backend/**"
       - ".github/workflows/backend.yml"
   pull_request:
-    branches: [main]
+    branches: [main, "stage/**", "cursor/**"]
     paths:
       - "backend/**"
       - ".github/workflows/backend.yml"

@@ -1,6 +1,7 @@
 import uuid
+from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, File, Form, Query, UploadFile
 from fastapi.responses import FileResponse
 
 from app.core.deps import CurrentUser, DbSession
@@ -12,10 +13,48 @@ from app.schemas.catalog import (
     TrackListResponse,
 )
 from app.schemas.search import FromCandidateRequest, FromCandidateResponse, TrackStatusResponse
+from app.schemas.upload import (
+    ConfirmUploadRequest,
+    ConfirmUploadResponse,
+    UploadCreateResponse,
+    VerificationResult,
+)
 from app.services.catalog import CatalogService
 from app.services.sourcing import SourcingService
+from app.services.uploads import UploadService
 
 router = APIRouter(tags=["tracks"])
+
+
+@router.post("/tracks/upload", response_model=UploadCreateResponse, status_code=201)
+async def upload_track(
+    user: CurrentUser,
+    session: DbSession,
+    file: Annotated[UploadFile, File()],
+    meta: Annotated[str | None, Form()] = None,
+    cover: Annotated[UploadFile | None, File()] = None,
+) -> UploadCreateResponse:
+    return await UploadService(session).create_upload(user.id, file, meta, cover)
+
+
+@router.get("/tracks/upload/{upload_id}/verify", response_model=VerificationResult)
+async def verify_upload(
+    upload_id: uuid.UUID,
+    user: CurrentUser,
+    session: DbSession,
+    meta: str | None = None,
+) -> VerificationResult:
+    return await UploadService(session).verify(user.id, upload_id, meta)
+
+
+@router.post("/tracks/upload/{upload_id}/confirm", response_model=ConfirmUploadResponse)
+async def confirm_upload(
+    upload_id: uuid.UUID,
+    payload: ConfirmUploadRequest,
+    user: CurrentUser,
+    session: DbSession,
+) -> ConfirmUploadResponse:
+    return await UploadService(session).confirm(user.id, upload_id, payload)
 
 
 @router.get("/tracks", response_model=TrackListResponse)

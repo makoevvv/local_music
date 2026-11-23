@@ -251,3 +251,21 @@ def _probe_source_url(url: str, *, source_kind: str | None) -> str:
             return "ok"
     except Exception:
         return "gone"
+
+
+def cleanup_uploads_job() -> dict[str, int]:
+    from app.services.maintenance import cleanup_uploads
+
+    return cleanup_uploads()
+
+
+def reconcile_albums_job(*, limit: int = 50) -> dict[str, int]:
+    from app.services.maintenance import reconcile_albums
+
+    return reconcile_albums(limit=limit)
+
+
+def match_user_uploads_job(*, limit: int = 5) -> dict[str, int]:
+    from app.services.maintenance import match_user_uploads
+
+    return match_user_uploads(limit=limit)

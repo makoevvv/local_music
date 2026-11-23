@@ -76,7 +76,7 @@ services:
       POSTGRES_HOST: postgres
       REDIS_URL: redis://redis:6379/0
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-music}:${POSTGRES_PASSWORD:-change-me-db}@postgres:5432/${POSTGRES_DB:-local_music}
-    command: ["rq", "worker", "default", "--url", "redis://redis:6379/0"]
+    command: ["rq", "worker", "--with-scheduler", "default", "--url", "redis://redis:6379/0"]
     volumes:
       - ../data/storage:/data/storage
       - ../data/exports:/data/exports

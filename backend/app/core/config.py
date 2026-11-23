@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     ytdlp_pot_base_url: str = "http://ytdlp-pot:4416"
     # Optional override: Netscape cookies file (usually not needed when ytdlp-pot is running).
     ytdlp_cookies_file: str | None = None
+    acoustid_api_key: str | None = None
+    upload_max_bytes: int = 52_428_800
+    upload_cover_max_bytes: int = 5_242_880
+    upload_session_ttl_seconds: int = 1800
+    verification_cache_ttl_seconds: int = 86_400
 
     @property
     def cors_origin_list(self) -> list[str]:
