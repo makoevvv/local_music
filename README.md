@@ -14,7 +14,7 @@
 |---|---|---|
 | Backend API | Python 3.12 + FastAPI | [`backend/`](backend/) |
 | Web-клиент | React + TypeScript + Vite | [`web/`](web/) |
-| iOS-приложение (план) | SwiftUI | [`docs/10-mobile-apps.md`](docs/10-mobile-apps.md) |
+| iOS-приложение | SwiftUI | [`ios/`](ios/) |
 | Android-приложение (план) | Kotlin + Jetpack Compose | [`docs/10-mobile-apps.md`](docs/10-mobile-apps.md) |
 | Инфраструктура | Docker Compose | [`infra/`](infra/) |
 | VPN / YouTube (опц.) | sing-box + yt-dlp PO Token | [`infra/proxy/README.md`](infra/proxy/README.md) |
@@ -74,8 +74,8 @@ cd web && pnpm install && pnpm dev
 | 4.2 Index & Restore | ✅ в `main` — PR [#5](https://github.com/makoevvv/local_music/pull/5) |
 | 4.1 Ручная загрузка | ✅ в `main` — PR [#6](https://github.com/makoevvv/local_music/pull/6) |
 | 4.3 External imports | ✅ в `main` |
-| 5. Моя волна | ✅ в этой ветке — см. [`CURRENT_TASK.md`](CURRENT_TASK.md) |
-| 6. iOS | 🔜 следующий |
+| 5. Моя волна | ✅ в `main` — PR [#11](https://github.com/makoevvv/local_music/pull/11) |
+| 6. iOS | код клиента в этой ветке; установка на iPhone ещё у владельца |
 
 Детали по этапам: [`docs/12-roadmap.md`](docs/12-roadmap.md).
 
