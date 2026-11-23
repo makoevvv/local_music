@@ -174,3 +174,41 @@ async def test_from_candidate_reuses_existing_artist(
     assert [artist.name for artist in artists] == ["Same Artist"]
     assert {track.title for track in tracks} == {"One", "Two"}
     assert tracks[0].cover_url_origin == "https://i.ytimg.com/vi/same/hqdefault.jpg"
+
+
+@pytest.mark.asyncio
+async def test_track_status_reports_download_error(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    master_user: object,
+) -> None:
+    token = await login(client, "owner@example.com", "owner-password-123")
+    headers = {"Authorization": f"Bearer {token}"}
+    with patch("app.services.search.search_entries", return_value=[_candidate("err111", "Broken")]):
+        search_response = await client.post(
+            "/api/v1/search",
+            headers=headers,
+            json={"query": "Broken", "limit": 5},
+        )
+    candidate_id = search_response.json()["items"][0]["candidate_id"]
+    with patch("app.services.sourcing.get_queue"):
+        created = await client.post(
+            "/api/v1/tracks/from-candidate",
+            headers=headers,
+            json={"candidate_id": candidate_id},
+        )
+    assert created.status_code == 201
+    track_id = created.json()["track_id"]
+    track = await db_session.get(Track, uuid.UUID(track_id))
+    assert track is not None
+    track.metadata_ = {"error": "download failed", "existing_track_id": track_id}
+    await db_session.commit()
+
+    status_response = await client.get(f"/api/v1/tracks/{track_id}/status", headers=headers)
+    assert status_response.status_code == 200
+    body = status_response.json()
+    assert body["error"] == "download failed"
+    assert body["existing_track_id"] == track_id
+
+    missing = await client.get(f"/api/v1/tracks/{uuid.uuid4()}/status", headers=headers)
+    assert missing.status_code == 404

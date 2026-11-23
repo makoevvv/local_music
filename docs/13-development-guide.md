@@ -176,6 +176,7 @@ docker compose exec backend alembic downgrade -1
   - Unit-тесты для services (mocked repos).
   - Интеграционные с реальным postgres+redis (testcontainers или `docker compose -f compose.test.yml`).
   - Контрактные тесты для API (httpx + pytest).
+  - `pytest` падает, если суммарное покрытие `app.services.auth`, `app.services.sourcing` и `app.services.vibe` ниже 60% (NFR-8).
 - Web:
   - Vitest для утилит и хуков.
   - Playwright (опц.) для e2e ключевых сценариев.
