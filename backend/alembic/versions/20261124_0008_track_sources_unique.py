@@ -1,15 +1,15 @@
 """unique track_sources (track_id, source_kind, source_id)
 
-Revision ID: 20261124_0007
-Revises: 20261124_0006
+Revision ID: 20261124_0008
+Revises: 20261124_0007
 """
 
 from collections.abc import Sequence
 
 from alembic import op
 
-revision: str = "20261124_0007"
-down_revision: str | None = "20261124_0006"
+revision: str = "20261124_0008"
+down_revision: str | None = "20261124_0007"
 branch_labels: Sequence[str] | None = None
 depends_on: Sequence[str] | None = None
 

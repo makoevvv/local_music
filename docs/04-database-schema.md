@@ -144,7 +144,7 @@ PK: (track_id, language_id)
 Индексы:
 - `idx_track_sources_track` (`track_id`).
 - `idx_track_sources_kind_status` (`source_kind`, `last_status`).
-- `uq_track_sources_track_kind_id` UNIQUE (`track_id`, `source_kind`, `source_id`) `NULLS NOT DISTINCT`. Одна и та же тройка не хранится дважды; `NULL` в `source_id` считается совпадением. Миграция `20261124_0007` перед созданием индекса удаляет дубликаты и оставляет самую раннюю строку.
+- `uq_track_sources_track_kind_id` UNIQUE (`track_id`, `source_kind`, `source_id`) `NULLS NOT DISTINCT`. Одна и та же тройка не хранится дважды; `NULL` в `source_id` считается совпадением. Миграция `20261124_0008` перед созданием индекса удаляет дубликаты и оставляет самую раннюю строку.
 
 > **Статус реализации:** таблица `track_sources` и поле `tracks.acoustid_fingerprint` — миграция `20260808_0005` (этап **4.2**). При download из search / CLI `import-track` всегда пишется запись в `track_sources`. Ручная загрузка (этап **4.1**) пишет `user_upload` с `recovery_priority=100` и подтверждённые публичные источники с приоритетом 10 (primary) и 20. Поля `tracks.metadata`: `album_unresolved`, `album_suggestion`, `unverified`.
 
