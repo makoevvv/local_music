@@ -1,0 +1,10 @@
+# Copy to a private path and fill in the tunnel id after `cloudflared tunnel login`.
+# The token flow (CLOUDFLARE_TUNNEL_TOKEN) does not need this file:
+# the public hostname is set in the Cloudflare dashboard to http://caddy:80.
+tunnel: REPLACE_WITH_TUNNEL_ID
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  - hostname: music.example.com
+    service: http://caddy:80
+  - service: http_status:404

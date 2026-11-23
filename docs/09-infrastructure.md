@@ -56,36 +56,30 @@ docker compose -p local_music -f infra/docker-compose.yml exec backend python -m
 
 ## Reverse proxy (Caddy)
 
-`infra/Caddyfile`:
-```
-{$DOMAIN} {
-    encode zstd gzip
+Продакшн-конфиг — [`infra/Caddyfile`](../infra/Caddyfile). Его собирает образ `caddy` (профиль compose `edge`): статика web и два слушателя.
 
-    @api path /api/* /openapi.json /docs /redoc /ws/*
-    handle @api {
-        reverse_proxy backend:8000
-    }
+- `:80` — HTTP внутри сети. Сюда смотрит Cloudflare Tunnel (`http://caddy:80`).
+- `:443` — HTTPS с внутренним сертификатом Caddy (`tls internal`), без публичного ACME. Снаружи сертификат выдаёт Cloudflare.
+- Заголовок `Strict-Transport-Security` включён.
+- `/api/*`, `/health`, `/docs`, `/ws/*` проксируются на `backend:8000`, остальное — SPA из `/srv/web`.
 
-    handle {
-        root * /srv/web
-        try_files {path} /index.html
-        file_server
-    }
-}
+```bash
+docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d --build
 ```
 
-Если без домена — слушаем 80 без TLS (только в локалке).
+Для этой сборки `VITE_API_BASE` пустой: браузер ходит на `/api` того же хоста. Добавь `https://<домен>` в `CORS_ORIGINS`, если клиент открывает API с другого origin (iOS).
 
 ## Внешний доступ
 
 ### Вариант 1: Cloudflare Tunnel (рекомендуется)
 - Бесплатно, без проброса портов, без статического IP.
+- В compose это сервис `cloudflared` того же профиля `edge`. Токен туннеля — `CLOUDFLARE_TUNNEL_TOKEN` в `.env` (в git не коммитится).
 - Шаги:
   1. Зарегистрировать домен в Cloudflare (или перенести NS).
-  2. `brew install cloudflared`.
-  3. `cloudflared tunnel login` → создать tunnel → получить creds.
-  4. Запустить как сервис: `cloudflared service install`.
-  5. Привязать `music.example.com` → `http://localhost:80`.
+  2. Zero Trust → Networks → Tunnels → создать туннель и скопировать token в `.env`.
+  3. Public hostname: `music.example.com` → `http://caddy:80`.
+  4. `docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d`.
+- Файл [`infra/cloudflared/config.yml.example`](../infra/cloudflared/config.yml.example) — тот же маршрут, если туннель запускается бинарём на хосте, а не контейнером. `credentials.json` в git не класть.
 - Бонус: Cloudflare Access (PIN/email) перед сайтом — дополнительный слой защиты.
 
 ### Вариант 2: Tailscale

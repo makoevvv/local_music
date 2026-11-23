@@ -1,0 +1,10 @@
+.git
+data
+**/node_modules
+**/__pycache__
+**/.venv
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+ios
+backend/tests
