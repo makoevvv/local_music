@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { to: '/catalog', label: 'Catalog' },
   { to: '/search', label: 'Add' },
+  { to: '/import', label: 'Import' },
   { to: '/playlists', label: 'Playlists' },
 ];
 

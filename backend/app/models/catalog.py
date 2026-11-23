@@ -236,6 +236,9 @@ class Playlist(Base):
     is_favourite: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
     cover_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    metadata_: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSONB, nullable=False, server_default="{}"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

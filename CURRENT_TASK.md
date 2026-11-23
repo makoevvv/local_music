@@ -6,36 +6,28 @@
 
 ## 🎯 Что нужно сделать
 
-Этап **4.3** — импорт из внешних сервисов ([`docs/17-external-imports.md`](docs/17-external-imports.md:1), [`docs/12-roadmap.md`](docs/12-roadmap.md:1)).
+Этап **5** — «Моя волна» ([`docs/07-vibe-recommendations.md`](docs/07-vibe-recommendations.md:1), [`docs/12-roadmap.md`](docs/12-roadmap.md:1)).
 
-Этапы 4, 4.2 и 4.1 закрыты в ветках/PR (поиск, индекс библиотеки, ручная загрузка). Перед 4.3 работай поверх актуального tip с `track_sources` и upload API.
+Этап 4.3 (импорт CSV/JSON, Spotify, Yandex) закрыт. Apple Music в чек-листе 4.3 остаётся опциональным.
 
 ---
 
 ## 🤔 Зачем
 
-Пользователь должен перенести лайки и плейлисты из Spotify, Яндекс Музыки или CSV, не создавая дубликаты.
+На главной можно включить волну и слушать подбор, который меняется от like/dislike/skip.
 
 ---
 
 ## 📚 Контекст и ссылки
 
-- [`docs/17-external-imports.md`](docs/17-external-imports.md:1)
-- [`docs/14-user-upload.md`](docs/14-user-upload.md:1) — source matching уже есть, импорт не должен его копировать
-- Архив 4.1: [`docs/tasks-archive/2026-11-24-stage-4-1-user-upload.md`](docs/tasks-archive/2026-11-24-stage-4-1-user-upload.md:1)
+- [`docs/07-vibe-recommendations.md`](docs/07-vibe-recommendations.md:1)
+- Архив 4.3: [`docs/tasks-archive/2026-11-24-stage-4-3-external-imports.md`](docs/tasks-archive/2026-11-24-stage-4-3-external-imports.md:1)
 
 ---
 
 ## ✅ Критерии готовности (кратко)
 
-Из roadmap §4.3: таблицы импорта, парсер CSV/JSON, Spotify и Yandex адаптеры, резолвер треков, API `/import/*`, UI очереди ambiguous, идемпотентность.
-
----
-
-## 🚧 Ограничения и нюансы
-
-- Не ломать upload и library index.
-- Apple Music в чек-листе помечен как опциональный.
+mood_profiles, scorer, pool, session, feedback, эндпоинты `/vibe/*`, UI главной, реакции влияют на следующий батч.
 
 ---
 
@@ -45,12 +37,6 @@
 
 ---
 
-## 📦 Ожидаемые артефакты
-
-—
-
----
-
 ## 📝 Лог работы по задаче
 
-- Этап 4.1: upload/verify/confirm, AcoustID, album resolution, source matching, cleanup/reconcile/match workers, web-вкладка загрузки.
+- Этап 4.3: файл CSV/JSON, Spotify OAuth, токен Яндекса, резолвер, очередь ambiguous, AES-GCM.

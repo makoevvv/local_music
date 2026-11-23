@@ -70,10 +70,11 @@ cd web && pnpm install && pnpm dev
 | Этап | Статус |
 |---|---|
 | 0–3 | ✅ в `main` — PR [#1](https://github.com/makoevvv/local_music/pull/1), [#2](https://github.com/makoevvv/local_music/pull/2), [#3](https://github.com/makoevvv/local_music/pull/3) |
-| 4. Поиск и загрузка | ✅ в ветке `stage/4-search-download`, PR [#4](https://github.com/makoevvv/local_music/pull/4) (ещё не вмержен) |
-| 4.2 Index & Restore | ✅ в ветке `cursor/stage-4-2-index-restore-409a` (поверх stage 4) |
-| 4.1 Ручная загрузка | ✅ в ветке `cursor/stage-4-1-user-upload-1140` |
-| 4.3 External imports | 🔜 следующий — см. [`CURRENT_TASK.md`](CURRENT_TASK.md) |
+| 4. Поиск и загрузка | ✅ в `main` — PR [#4](https://github.com/makoevvv/local_music/pull/4) |
+| 4.2 Index & Restore | ✅ в `main` — PR [#5](https://github.com/makoevvv/local_music/pull/5) |
+| 4.1 Ручная загрузка | ✅ в `main` — PR [#6](https://github.com/makoevvv/local_music/pull/6) |
+| 4.3 External imports | ✅ в этой ветке — см. [`CURRENT_TASK.md`](CURRENT_TASK.md) |
+| 5. Моя волна | 🔜 следующий |
 
 Детали по этапам: [`docs/12-roadmap.md`](docs/12-roadmap.md).
 

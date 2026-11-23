@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { PlayerBar } from '@/components/PlayerBar';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { CatalogPage } from '@/pages/CatalogPage';
+import { ImportPage } from '@/pages/ImportPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { PlaylistDetailPage } from '@/pages/PlaylistDetailPage';
 import { PlaylistsPage } from '@/pages/PlaylistsPage';
@@ -36,6 +37,7 @@ export default function App() {
           <Route index element={<Navigate to="/catalog" replace />} />
           <Route path="/catalog" element={<CatalogPage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/import" element={<ImportPage />} />
           <Route path="/tracks/:id" element={<TrackPage />} />
           <Route path="/playlists" element={<PlaylistsPage />} />
           <Route path="/playlists/:id" element={<PlaylistDetailPage />} />

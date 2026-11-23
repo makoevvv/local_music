@@ -113,19 +113,21 @@
 
 ---
 
-## Этап 4.3. External imports (Spotify / Yandex / Apple Music / file)
+## Этап 4.3. External imports (Spotify / Yandex / Apple Music / file) ✅
 Подробности — [`17-external-imports.md`](17-external-imports.md:1).
-- [ ] Миграция: таблицы `external_accounts`, `import_jobs`, `import_items`.
-- [ ] Универсальный парсер CSV/JSON (Exportify, Soundiiz, TuneMyMusic, Spotify GDPR-экспорт).
-- [ ] Spotify OAuth-адаптер (spotipy): liked tracks + playlists.
-- [ ] Yandex Music adapter (yandex-music): неофициальный токен, лайки + плейлисты.
+- [x] Миграция: таблицы `external_accounts`, `import_jobs`, `import_items`, поле `playlists.metadata`.
+- [x] Универсальный парсер CSV/JSON (колонки title/artist/album/isrc/duration/playlist и JSON плейлистов).
+- [x] Spotify OAuth-адаптер (ручной HTTP-клиент): authorize URL, callback, liked tracks + playlists.
+- [x] Yandex Music adapter: пользовательский токен, лайки через неофициальный API.
 - [ ] (опц.) Apple Music через MusicKit + Developer JWT ES256.
-- [ ] Track resolver: ISRC → mbid → локальный fuzzy → авто-загрузка (`match ≥ 0.85`) → `ambiguous`.
-- [ ] RQ-воркер `process_import_job` с rate-limit для внешних API и yt-dlp.
-- [ ] API `/import/*` (providers, connect, callback, file, jobs, items, resolve).
-- [ ] UI «Импорт»: выбор источника, прогресс, очередь ambiguous с ручным выбором кандидата.
-- [ ] Шифрование внешних токенов AES-GCM (мастер-ключ из `.env`), ротация без потери токенов.
-- [ ] Идемпотентность: повторный импорт того же файла/плейлиста не создаёт дублей.
+- [x] Track resolver: ISRC → локальный fuzzy → авто-загрузка (`match ≥ auto_threshold`, по умолчанию 0.85) → `ambiguous`.
+- [x] RQ-воркер `process_import_job` с паузой между поисками вне тестового окружения.
+- [x] API `/import/*` (providers, connect, callback, file, jobs, items, resolve, cancel).
+- [x] UI «Импорт»: загрузка файла, прогресс, очередь ambiguous с выбором кандидата.
+- [x] Шифрование внешних токенов AES-GCM (`EXTERNAL_TOKENS_KEY` или SHA-256 от `APP_SECRET_KEY`).
+- [x] Идемпотентность: повтор того же файла в том же режиме возвращает существующий job.
+
+**DoD:** пользователь загружает CSV из Spotify-экспорта (или подключает OAuth) → создаются соответствующие плейлисты, треки автоматически скачиваются при уверенном матче, неразрешённые — попадают в очередь «ambiguous» для ручного выбора; повтор импорта идемпотентен.
 
 **DoD:** пользователь загружает CSV из Spotify-экспорта (или подключает OAuth) → создаются соответствующие плейлисты, треки автоматически скачиваются при уверенном матче, неразрешённые — попадают в очередь «ambiguous» для ручного выбора; повтор импорта идемпотентен.
 

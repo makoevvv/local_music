@@ -269,3 +269,9 @@ def match_user_uploads_job(*, limit: int = 5) -> dict[str, int]:
     from app.services.maintenance import match_user_uploads
 
     return match_user_uploads(limit=limit)
+
+
+def process_import_job(job_id: str) -> None:
+    from app.services.imports.pipeline import run_import_job
+
+    run_import_job(job_id)
