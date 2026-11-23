@@ -56,6 +56,7 @@ export interface TrackSummary {
   has_lyrics: boolean;
   play_count: number;
   explicit: boolean;
+  unverified?: boolean;
   artists: ArtistRef[];
   album: AlbumRef | null;
   user_sentiment: LikeSentiment | null;

@@ -117,6 +117,7 @@ docker compose -p local_music -f infra/docker-compose.yml exec backend python -m
    ```
    0 3 * * *  cd ~/srv/local-music && ./infra/scripts/backup_db.sh
    15 3 * * * cd ~/srv/local-music && ./infra/scripts/export_index.sh
+   30 4 * * * cd ~/srv/local-music && ./infra/scripts/library_maintenance.sh
    ```
 5. Хранить не менее 7 ежедневных + 4 еженедельных. Индекс компактный (мегабайты) — копию рекомендуется держать вне сервера (приватный репо/облако/флешка).
 

@@ -32,9 +32,9 @@
 | POST | `/tracks/from-candidate` | `{candidate_id}` → создаёт Track(status=downloading), ставит задачу в очередь. |
 | GET  | `/tracks/{id}/status` | Статус загрузки/обработки. |
 | WS   | `/ws/tracks` | События: `track.status_changed`, `track.ready`, `track.failed`. |
-| POST | `/tracks/upload` | Ручная загрузка файла (multipart). См. [`14-user-upload.md`](14-user-upload.md:1). |
-| GET  | `/tracks/upload/{upload_id}/verify` | Запуск/получение результата верификации. |
-| POST | `/tracks/upload/{upload_id}/confirm` | Подтверждение публикации в библиотеку. |
+| POST | `/tracks/upload` | multipart `file`, опционально `cover` и `meta` (JSON) → `{upload_id, parsed_meta, verification_pending}`. |
+| GET  | `/tracks/upload/{upload_id}/verify` | Query `meta` (JSON, опционально). Ответ: `trust_level`, `score`, `suggestions`, `candidate_sources`, `primary_source_index`. |
+| POST | `/tracks/upload/{upload_id}/confirm` | `{meta, accept_suggestions, force, selected_source_ids, primary_source_id}` → `{track_id, already_exists, rejected_source_ids}`. `trust=low` без `force` → 409. |
 
 Структура candidate:
 ```json

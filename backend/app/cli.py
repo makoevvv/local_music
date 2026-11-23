@@ -79,6 +79,19 @@ def _build_parser() -> argparse.ArgumentParser:
     verify = subparsers.add_parser("verify-sources", help="Probe track_sources availability")
     verify.add_argument("--limit", type=int, default=200)
 
+    subparsers.add_parser("cleanup-uploads", help="Delete upload sessions older than 30 minutes")
+
+    reconcile = subparsers.add_parser(
+        "reconcile-albums", help="Retry album resolution for unresolved tracks"
+    )
+    reconcile.add_argument("--limit", type=int, default=50)
+
+    match_uploads = subparsers.add_parser(
+        "match-user-uploads",
+        help="Find public sources for tracks that only have user_upload",
+    )
+    match_uploads.add_argument("--limit", type=int, default=5)
+
     return parser
 
 
@@ -291,6 +304,24 @@ def main() -> None:
         raise SystemExit(asyncio.run(_cmd_library_restore(args)))
     if args.command == "verify-sources":
         raise SystemExit(_cmd_verify_sources(args))
+    if args.command == "cleanup-uploads":
+        from app.workers.tasks import cleanup_uploads_job
+
+        result = cleanup_uploads_job()
+        print(f"removed={result['removed']}")
+        raise SystemExit(0)
+    if args.command == "reconcile-albums":
+        from app.workers.tasks import reconcile_albums_job
+
+        result = reconcile_albums_job(limit=args.limit)
+        print(f"checked={result['checked']} updated={result['updated']}")
+        raise SystemExit(0)
+    if args.command == "match-user-uploads":
+        from app.workers.tasks import match_user_uploads_job
+
+        result = match_user_uploads_job(limit=args.limit)
+        print(f"checked={result['checked']} added={result['added']}")
+        raise SystemExit(0)
 
     parser.print_help()
     raise SystemExit(1)

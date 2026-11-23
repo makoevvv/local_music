@@ -76,22 +76,24 @@
 
 ---
 
-## Этап 4.1. Ручная загрузка треков и верификация
+## Этап 4.1. Ручная загрузка треков и верификация ✅
 Подробности — [`14-user-upload.md`](14-user-upload.md:1).
-- [ ] Эндпоинты `/tracks/upload`, `/tracks/upload/{id}/verify`, `/tracks/upload/{id}/confirm`.
-- [ ] Парсер встроенных тегов (`mutagen`).
-- [ ] Бинарь `fpcalc` (chromaprint) в образе backend; интеграция с AcoustID API.
-- [ ] Верификатор: AcoustID → MusicBrainz fuzzy → эвристики; уровни trust `high/medium/low/none`.
-- [ ] Album resolution: по mbid recording'а из AcoustID → MusicBrainz `release-group.primary-type` → реальный альбом или подтверждённый сингл (см. [`14-user-upload.md`](14-user-upload.md:1) §2).
-- [ ] Фоновый воркер `reconcile_albums` (раз в сутки) — повторное разрешение для треков с `metadata.album_unresolved=true`.
-- [ ] `is_single=true` ставится только при подтверждённом primary-type=Single.
-- [ ] RQ-воркер `cleanup_uploads` (TTL 30 минут).
-- [ ] **Source matching**: после загрузки backend ищет тот же трек в открытых источниках (yt-dlp ytsearch/scsearch), показывает кандидатов в карточке верификации (см. [`14-user-upload.md`](14-user-upload.md:1) §3).
-- [ ] Запись всех подтверждённых кандидатов в `track_sources` с правильным `recovery_priority` (публичные < `user_upload`).
-- [ ] Фоновый воркер `match_user_uploads` (раз в сутки) — повторный поиск публичных источников для треков, у которых только `user_upload`.
-- [ ] UI: вкладка «Загрузить файл», карточка верификации с предложениями метаданных и списком найденных источников; выбор primary.
+- [x] Эндпоинты `/tracks/upload`, `/tracks/upload/{id}/verify`, `/tracks/upload/{id}/confirm`.
+- [x] Парсер встроенных тегов (`mutagen`).
+- [x] Бинарь `fpcalc` (chromaprint) в образе backend; интеграция с AcoustID API.
+- [x] Верификатор: AcoustID → MusicBrainz fuzzy → эвристики; уровни trust `high/medium/low/none`.
+- [x] Album resolution: по mbid recording'а из AcoustID → MusicBrainz `release-group.primary-type` → реальный альбом или подтверждённый сингл (см. [`14-user-upload.md`](14-user-upload.md:1) §2).
+- [x] Фоновый воркер `reconcile_albums` (раз в сутки) — повторное разрешение для треков с `metadata.album_unresolved=true`.
+- [x] `is_single=true` ставится только при подтверждённом primary-type=Single.
+- [x] RQ-воркер `cleanup_uploads` (TTL 30 минут).
+- [x] **Source matching**: после загрузки backend ищет тот же трек в открытых источниках (yt-dlp ytsearch/scsearch), показывает кандидатов в карточке верификации (см. [`14-user-upload.md`](14-user-upload.md:1) §3).
+- [x] Запись всех подтверждённых кандидатов в `track_sources` с правильным `recovery_priority` (публичные < `user_upload`).
+- [x] Фоновый воркер `match_user_uploads` (раз в сутки) — повторный поиск публичных источников для треков, у которых только `user_upload`.
+- [x] UI: вкладка «Загрузить файл», карточка верификации с предложениями метаданных и списком найденных источников; выбор primary.
 
 **DoD:** пользователь загружает локальный mp3 → видит распознанные метаданные **и** список найденных публичных кандидатов (если есть) → подтверждает с выбором primary-источника → трек появляется в библиотеке, в индексе есть и `user_upload`, и публичные ссылки.
+
+> Кнопка «promote» (заменить файл пользователя публичным) — этап 7. iOS document picker — этап 6. ShazamKit на устройстве не входит в backend.
 
 ---
 

@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createTrackFromCandidate, getTrackStatus, searchTracks } from '@/api/search';
+import { UploadPanel } from '@/components/UploadPanel';
 import { formatDuration } from '@/lib/utils';
 import type { SearchCandidate } from '@/types';
 
@@ -20,6 +21,7 @@ export function SearchPage() {
   const [pending, setPending] = useState<PendingDownload[]>([]);
 
   const [warning, setWarning] = useState<string | null>(null);
+  const [tab, setTab] = useState<'find' | 'upload'>('find');
 
   const searchMutation = useMutation({
     mutationFn: (value: string) => searchTracks(value, 10),
@@ -84,11 +86,32 @@ export function SearchPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Search</h1>
+        <h1 className="text-2xl font-semibold text-white">Add track</h1>
         <p className="mt-1 text-sm text-zinc-400">
-          Find tracks on YouTube and SoundCloud, then add them to your library.
+          Find a track online or upload a file from this device.
         </p>
+        <div className="mt-4 flex gap-2">
+          <button
+            type="button"
+            className={tab === 'find' ? 'btn-primary' : 'btn-ghost'}
+            onClick={() => setTab('find')}
+          >
+            Find online
+          </button>
+          <button
+            type="button"
+            className={tab === 'upload' ? 'btn-primary' : 'btn-ghost'}
+            onClick={() => setTab('upload')}
+          >
+            Upload file
+          </button>
+        </div>
       </div>
+
+      {tab === 'upload' ? (
+        <UploadPanel />
+      ) : (
+        <>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
         <input
@@ -193,6 +216,8 @@ export function SearchPage() {
             </div>
           ))}
         </section>
+      )}
+        </>
       )}
     </div>
   );
