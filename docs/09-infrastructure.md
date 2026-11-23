@@ -118,7 +118,7 @@ docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d -
 ## Логи и мониторинг
 
 - `docker compose logs -f --tail=200 backend`.
-- Уровень логирования backend регулируется через `LOG_LEVEL` (INFO/DEBUG).
+- Логи backend и worker — одна JSON-строка на событие в stdout: `ts`, `level`, `logger`, `message`. Уровень задаётся `LOG_LEVEL` (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`), по умолчанию `INFO`. Запуск API: `python -m app.main`.
 - Uptime Kuma — отдельный контейнер, профиль `monitor`. UI только на localhost, наружу через туннель не публикуется.
 
   ```bash

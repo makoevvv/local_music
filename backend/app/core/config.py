@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     app_env: str = "development"
     app_secret_key: str
+    log_level: str = "INFO"
     app_host: str = "0.0.0.0"
     app_port: int = 8000
 
