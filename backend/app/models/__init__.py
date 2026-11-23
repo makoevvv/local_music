@@ -19,6 +19,7 @@ from app.models.catalog import (
 )
 from app.models.invite import Invite
 from app.models.refresh_token import RefreshToken
+from app.models.search import SearchCandidate
 from app.models.user import User, UserRole
 
 __all__ = [
@@ -36,6 +37,7 @@ __all__ = [
     "Playlist",
     "PlaylistTrack",
     "RefreshToken",
+    "SearchCandidate",
     "Track",
     "TrackArtist",
     "TrackGenre",

@@ -49,22 +49,34 @@ class AuthService:
 
     async def register(self, payload: RegisterRequest) -> UserPublic:
         if not settings.registration_enabled:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Registration disabled")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Registration disabled"
+            )
         if settings.registration_invite_only:
             invite = await self._invites.get_by_code(payload.invite_code)
             if invite is None:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid invite code")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid invite code"
+                )
             if invite.used_by_user_id is not None:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invite already used")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invite already used"
+                )
             if invite.expires_at and invite.expires_at < datetime.now(UTC):
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invite expired")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invite expired"
+                )
         else:
             invite = None
 
         if await self._users.get_by_email(payload.email):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+            )
         if await self._users.get_by_username(payload.username):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Username already taken"
+            )
 
         user = User(
             email=payload.email.lower(),
@@ -87,7 +99,9 @@ class AuthService:
     async def login(self, payload: LoginRequest) -> TokenResponse:
         user = await self._users.get_by_login(payload.login)
         if user is None or not verify_password(user.password_hash, payload.password):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+            )
         if not user.is_active:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account inactive")
         tokens = await self._issue_tokens(user)
@@ -105,13 +119,19 @@ class AuthService:
         token_hash = hash_refresh_token(refresh_token)
         stored = await self._refresh.get_by_hash(token_hash)
         if stored is None or stored.revoked_at is not None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
+            )
         if stored.expires_at < datetime.now(UTC):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token expired")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token expired"
+            )
 
         user = await self._users.get_by_id(stored.user_id)
         if user is None or not user.is_active:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive"
+            )
 
         await self._refresh.revoke(stored)
         tokens = await self._issue_tokens(user)
@@ -129,7 +149,9 @@ class AuthService:
         if payload.username is not None and payload.username != user.username:
             existing = await self._users.get_by_username(payload.username)
             if existing is not None:
-                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT, detail="Username already taken"
+                )
             user.username = payload.username
 
         if payload.new_password is not None:
@@ -139,7 +161,9 @@ class AuthService:
                     detail="current_password is required to set new_password",
                 )
             if not verify_password(user.password_hash, payload.current_password):
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid current password")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid current password"
+                )
             user.password_hash = hash_password(payload.new_password)
 
         user.updated_at = datetime.now(UTC)
@@ -176,9 +200,13 @@ class AdminService:
 
     async def create_user(self, actor: User, payload: CreateUserRequest) -> UserPublic:
         if await self._users.get_by_email(payload.email):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+            )
         if await self._users.get_by_username(payload.username):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Username already taken"
+            )
 
         user = User(
             email=payload.email.lower(),
@@ -202,10 +230,14 @@ class AdminService:
         await self._session.refresh(user)
         return UserPublic.model_validate(user)
 
-    async def update_user(self, actor: User, user_id: uuid.UUID, payload: UpdateUserRequest) -> UserPublic:
+    async def update_user(
+        self, actor: User, user_id: uuid.UUID, payload: UpdateUserRequest
+    ) -> UserPublic:
         user = await self._get_user_or_404(user_id)
         if user.is_master and user.id != actor.id and not actor.is_master:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot modify master account")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Cannot modify master account"
+            )
 
         if payload.email is not None:
             user.email = payload.email.lower()
@@ -232,7 +264,9 @@ class AdminService:
     ) -> UserPublic:
         user = await self._get_user_or_404(user_id)
         if user.is_master:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot change master role")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Cannot change master role"
+            )
         user.role = payload.role
         user.updated_at = datetime.now(UTC)
         await self._audit.add(
@@ -249,7 +283,9 @@ class AdminService:
     async def delete_user(self, actor: User, user_id: uuid.UUID) -> None:
         user = await self._get_user_or_404(user_id)
         if user.is_master:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Master account cannot be deleted")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Master account cannot be deleted"
+            )
         try:
             await self._users.delete(user)
             await self._audit.add(

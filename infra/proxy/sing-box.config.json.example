@@ -1,0 +1,38 @@
+{
+  "log": { "level": "warn" },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "0.0.0.0",
+      "listen_port": 1080
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "YOUR_SERVER_HOST",
+      "server_port": 443,
+      "uuid": "YOUR_UUID",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "YOUR_SNI_OR_REALITY_DEST",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "YOUR_REALITY_PUBLIC_KEY",
+          "short_id": "YOUR_SHORT_ID"
+        }
+      }
+    },
+    { "type": "direct", "tag": "direct" }
+  ],
+  "route": {
+    "final": "proxy"
+  }
+}

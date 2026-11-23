@@ -136,3 +136,30 @@ export interface LoginRequest {
   login: string;
   password: string;
 }
+
+export interface SearchCandidate {
+  candidate_id: string;
+  title: string;
+  artist: string;
+  duration_seconds: number | null;
+  thumbnail_url: string | null;
+  source_kind: string;
+  source_id: string;
+  tier: number;
+  restricted: boolean;
+}
+
+export interface SearchResponse {
+  query: string;
+  cached: boolean;
+  items: SearchCandidate[];
+  warning?: string | null;
+}
+
+export interface TrackEventMessage {
+  event: string;
+  track_id: string;
+  status?: string;
+  error?: string;
+  existing_track_id?: string;
+}

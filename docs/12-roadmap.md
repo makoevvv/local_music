@@ -60,16 +60,19 @@
 
 ---
 
-## Этап 4. Поиск и загрузка из интернета
-- [ ] yt-dlp в Docker-образе backend.
-- [ ] Эндпоинт `/search` с кешем (Redis + `search_candidates`).
-- [ ] Эндпоинт `/tracks/from-candidate`.
-- [ ] RQ-воркер: `download_track`, дедупликация по `audio_sha256`.
-- [ ] Обогащение метаданных: MusicBrainz, Last.fm.
-- [ ] WebSocket уведомления о статусе.
-- [ ] UI: поиск, выбор кандидата, прогресс.
+## Этап 4. Поиск и загрузка из интернета ✅
+- [x] yt-dlp + ffmpeg в Docker-образе backend.
+- [x] Эндпоинт `/search` с кешем (Redis + `search_candidates`).
+- [x] Эндпоинт `/tracks/from-candidate`, `/tracks/{id}/status`.
+- [x] RQ-воркер: `download_track`, дедупликация по `audio_sha256`.
+- [x] Обогащение метаданных: MusicBrainz, Last.fm (best-effort, не блокирует `ready`).
+- [x] WebSocket уведомления о статусе (`/api/v1/ws/tracks`).
+- [x] Web UI: Search, выбор кандидата, прогресс.
+- [x] Инфра: сервис `ytdlp-pot` (PO Token, без cookies браузера); опционально VPN — профиль `proxy` + `YTDLP_PROXY` (см. [`infra/proxy/README.md`](../infra/proxy/README.md)).
 
-**DoD:** пользователь ввёл запрос → выбрал → через ~30 сек трек слушается, есть обложка и жанр.
+**DoD:** пользователь ввёл запрос → выбрал → через ~30 сек трек слушается; жанр/альбом — по возможности из MusicBrainz/Last.fm.
+
+> **Индекс библиотеки (`track_sources`, export/import):** на этом этапе **не делаем** — только поля `tracks.source_*`. Полноценный индекс — этап 4.2.
 
 ---
 
@@ -94,8 +97,8 @@
 
 ## Этап 4.2. Index & Restore (переносимая библиотека)
 Подробности — [`16-library-index-and-restore.md`](16-library-index-and-restore.md:1).
-- [ ] Миграция: таблица `track_sources`, поля `tracks.acoustid_fingerprint`, `tracks.cover_url_origin`.
-- [ ] При создании трека (этапы 4 и 4.1) **всегда** пишем запись в `track_sources`.
+- [ ] Миграция: таблица `track_sources`, поля `tracks.acoustid_fingerprint` (если ещё нет).
+- [ ] При создании трека (download из search, ручная загрузка 4.1) **всегда** пишем запись в `track_sources` (сейчас этап 4 пишет только denormalized `tracks.source_*`).
 - [ ] CLI: `index export` (jsonl + manifest, `--minimal/--include-covers/--include-secrets/--no-plays`).
 - [ ] CLI: `index import --mode=skip-existing|overwrite|mirror` с обработкой конфликтов UUID/sha256.
 - [ ] CLI: `library restore` (yt-dlp по сохранённым источникам, fallback через acoustid_fingerprint).

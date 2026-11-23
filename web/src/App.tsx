@@ -7,15 +7,20 @@ import { CatalogPage } from '@/pages/CatalogPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { PlaylistDetailPage } from '@/pages/PlaylistDetailPage';
 import { PlaylistsPage } from '@/pages/PlaylistsPage';
+import { SearchPage } from '@/pages/SearchPage';
 import { TrackPage } from '@/pages/TrackPage';
 import { useAuthStore } from '@/store/authStore';
+import { useTrackEvents } from '@/hooks/useTrackEvents';
 
 export default function App() {
   const initialize = useAuthStore((state) => state.initialize);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
     void initialize();
   }, [initialize]);
+
+  useTrackEvents(isAuthenticated);
 
   return (
     <>
@@ -30,6 +35,7 @@ export default function App() {
         >
           <Route index element={<Navigate to="/catalog" replace />} />
           <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/tracks/:id" element={<TrackPage />} />
           <Route path="/playlists" element={<PlaylistsPage />} />
           <Route path="/playlists/:id" element={<PlaylistDetailPage />} />

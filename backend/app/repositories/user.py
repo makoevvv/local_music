@@ -37,7 +37,9 @@ class UserRepository:
         return list(result.scalars().all())
 
     async def master_exists(self) -> bool:
-        result = await self._session.execute(select(User.id).where(User.is_master.is_(True)).limit(1))
+        result = await self._session.execute(
+            select(User.id).where(User.is_master.is_(True)).limit(1)
+        )
         return result.scalar_one_or_none() is not None
 
     async def add(self, user: User) -> User:

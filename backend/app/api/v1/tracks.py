@@ -11,7 +11,9 @@ from app.schemas.catalog import (
     TrackDetail,
     TrackListResponse,
 )
+from app.schemas.search import FromCandidateRequest, FromCandidateResponse, TrackStatusResponse
 from app.services.catalog import CatalogService
+from app.services.sourcing import SourcingService
 
 router = APIRouter(tags=["tracks"])
 
@@ -38,6 +40,24 @@ async def list_tracks(
         page=page,
         page_size=page_size,
     )
+
+
+@router.post("/tracks/from-candidate", response_model=FromCandidateResponse, status_code=201)
+async def create_track_from_candidate(
+    payload: FromCandidateRequest,
+    user: CurrentUser,
+    session: DbSession,
+) -> FromCandidateResponse:
+    return await SourcingService(session).create_track_from_candidate(user.id, payload)
+
+
+@router.get("/tracks/{track_id}/status", response_model=TrackStatusResponse)
+async def get_track_status(
+    track_id: uuid.UUID,
+    user: CurrentUser,
+    session: DbSession,
+) -> TrackStatusResponse:
+    return await SourcingService(session).get_track_status(user.id, track_id)
 
 
 @router.get("/tracks/{track_id}", response_model=TrackDetail)

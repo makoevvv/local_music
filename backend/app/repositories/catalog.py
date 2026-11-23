@@ -52,12 +52,16 @@ class CatalogRepository:
         if has_lyrics is not None:
             stmt = stmt.where(Track.has_lyrics.is_(has_lyrics))
         if genre_slug:
-            stmt = stmt.join(TrackGenre, TrackGenre.track_id == Track.id).join(Genre).where(
-                Genre.slug == genre_slug
+            stmt = (
+                stmt.join(TrackGenre, TrackGenre.track_id == Track.id)
+                .join(Genre)
+                .where(Genre.slug == genre_slug)
             )
         if language_code:
-            stmt = stmt.join(TrackLanguage, TrackLanguage.track_id == Track.id).join(Language).where(
-                Language.code == language_code
+            stmt = (
+                stmt.join(TrackLanguage, TrackLanguage.track_id == Track.id)
+                .join(Language)
+                .where(Language.code == language_code)
             )
 
         count_stmt = select(func.count()).select_from(stmt.subquery())
@@ -148,7 +152,9 @@ class CatalogRepository:
         )
         return list(result.scalars().all())
 
-    async def create_play(self, user_id: uuid.UUID, track_id: uuid.UUID, source: str | None) -> Play:
+    async def create_play(
+        self, user_id: uuid.UUID, track_id: uuid.UUID, source: str | None
+    ) -> Play:
         play = Play(user_id=user_id, track_id=track_id, source=source)
         self._session.add(play)
         await self._session.flush()
@@ -197,7 +203,9 @@ class PlaylistRepository:
                 .selectinload(PlaylistTrack.track)
                 .selectinload(Track.artists)
                 .selectinload(TrackArtist.artist),
-                selectinload(Playlist.tracks).selectinload(PlaylistTrack.track).selectinload(Track.album),
+                selectinload(Playlist.tracks)
+                .selectinload(PlaylistTrack.track)
+                .selectinload(Track.album),
             )
         )
         return result.scalar_one_or_none()
@@ -208,7 +216,9 @@ class PlaylistRepository:
 
     async def count_tracks(self, playlist_id: uuid.UUID) -> int:
         result = await self._session.execute(
-            select(func.count()).select_from(PlaylistTrack).where(PlaylistTrack.playlist_id == playlist_id)
+            select(func.count())
+            .select_from(PlaylistTrack)
+            .where(PlaylistTrack.playlist_id == playlist_id)
         )
         return int(result.scalar_one())
 
