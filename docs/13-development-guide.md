@@ -85,8 +85,8 @@ mypy app
 # тесты
 pytest
 
-# запуск локально (без Docker)
-uvicorn app.main:app --reload --port 8000
+# запуск локально (без Docker); логи — JSON, уровень из LOG_LEVEL
+python -m app.main
 
 # импорт локального аудиофайла в каталог (этап 3+)
 python -m app.cli import-track --file /path/to/track.mp3 --title "Title" --artist "Artist" --user-id <uuid>
