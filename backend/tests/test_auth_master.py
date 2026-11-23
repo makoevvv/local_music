@@ -100,6 +100,141 @@ async def test_is_master_flag_is_immutable(db_session: AsyncSession, master_user
 
 
 @pytest.mark.asyncio
+async def test_login_rejects_unknown_password(client: AsyncClient, master_user: User) -> None:
+    response = await client.post(
+        "/api/v1/auth/login",
+        json={"login": "owner@example.com", "password": "wrong-password"},
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_refresh_rotates_token_and_logout_revokes_it(
+    client: AsyncClient, regular_user: User
+) -> None:
+    logged_in = await client.post(
+        "/api/v1/auth/login",
+        json={"login": "friend@example.com", "password": "friend-password-123"},
+    )
+    assert logged_in.status_code == 200
+    refresh_token = logged_in.json()["refresh_token"]
+
+    refreshed = await client.post(
+        "/api/v1/auth/refresh",
+        json={"refresh_token": refresh_token},
+    )
+    assert refreshed.status_code == 200
+    new_refresh = refreshed.json()["refresh_token"]
+    assert new_refresh != refresh_token
+
+    logout = await client.post(
+        "/api/v1/auth/logout",
+        json={"refresh_token": new_refresh},
+    )
+    assert logout.status_code == 204
+
+    reused = await client.post(
+        "/api/v1/auth/refresh",
+        json={"refresh_token": new_refresh},
+    )
+    assert reused.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_update_me_changes_username_and_password(
+    client: AsyncClient, regular_user: User
+) -> None:
+    token = await login(client, "friend@example.com", "friend-password-123")
+    renamed = await client.patch(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"username": "friend-renamed"},
+    )
+    assert renamed.status_code == 200
+    assert renamed.json()["username"] == "friend-renamed"
+
+    changed = await client.patch(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "current_password": "friend-password-123",
+            "new_password": "friend-password-456",
+        },
+    )
+    assert changed.status_code == 200
+
+    old_login = await client.post(
+        "/api/v1/auth/login",
+        json={"login": "friend-renamed", "password": "friend-password-123"},
+    )
+    assert old_login.status_code == 401
+    new_login = await client.post(
+        "/api/v1/auth/login",
+        json={"login": "friend-renamed", "password": "friend-password-456"},
+    )
+    assert new_login.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_register_rejects_unknown_invite(client: AsyncClient, master_user: User) -> None:
+    response = await client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "stranger@example.com",
+            "username": "stranger",
+            "password": "stranger-password",
+            "invite_code": "missing-invite",
+        },
+    )
+    assert response.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_master_creates_lists_deactivates_and_invites(
+    client: AsyncClient, master_user: User, regular_user: User
+) -> None:
+    token = await login(client, "owner@example.com", "owner-password-123")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    created = await client.post(
+        "/api/v1/admin/users",
+        headers=headers,
+        json={
+            "email": "extra@example.com",
+            "username": "extra",
+            "password": "extra-password-123",
+            "role": "user",
+        },
+    )
+    assert created.status_code == 201
+    created_id = created.json()["id"]
+
+    listed = await client.get("/api/v1/admin/users", headers=headers)
+    assert listed.status_code == 200
+    assert any(item["id"] == created_id for item in listed.json())
+
+    deactivated = await client.patch(
+        f"/api/v1/admin/users/{regular_user.id}",
+        headers=headers,
+        json={"is_active": False},
+    )
+    assert deactivated.status_code == 200
+    blocked = await client.post(
+        "/api/v1/auth/login",
+        json={"login": "friend@example.com", "password": "friend-password-123"},
+    )
+    assert blocked.status_code == 403
+
+    invite = await client.post(
+        "/api/v1/admin/invites",
+        headers=headers,
+        json={"expires_in_days": 3},
+    )
+    assert invite.status_code == 201
+    assert invite.json()["code"]
+
+
+@pytest.mark.asyncio
 async def test_only_one_master_allowed(db_session: AsyncSession) -> None:
     service = MasterBootstrapService(db_session)
     await service.init_master(

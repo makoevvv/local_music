@@ -31,6 +31,7 @@ dev = [
     "mypy==1.14.0",
     "pytest==8.3.4",
     "pytest-asyncio==0.25.0",
+    "pytest-cov==6.0.0",
     "ruff==0.8.4",
     "types-redis==4.6.0.20241004",
 ]
@@ -78,10 +79,20 @@ disallow_untyped_defs = false
 module = ["yt_dlp", "yt_dlp.*", "mutagen", "mutagen.*"]
 ignore_missing_imports = true
 
+[tool.coverage.run]
+concurrency = ["greenlet", "thread"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+addopts = [
+    "--cov=app.services.auth",
+    "--cov=app.services.sourcing",
+    "--cov=app.services.vibe",
+    "--cov-report=term-missing",
+    "--cov-fail-under=60",
+]
 markers = [
     "no_db: tests that do not require database migrations",
 ]
