@@ -42,6 +42,7 @@ services:
 - `pgdata` → `/var/lib/postgresql/data`
 - `storage` → `/data/storage` (биндим в `~/srv/local-music/data/storage` для удобства бэкапа)
 - `caddy_data`, `caddy_config`
+- `uptime_kuma` → данные Uptime Kuma (`/app/data`)
 
 ## Запуск
 ```bash
@@ -118,7 +119,13 @@ docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d -
 
 - `docker compose logs -f --tail=200 backend`.
 - Уровень логирования backend регулируется через `LOG_LEVEL` (INFO/DEBUG).
-- Опционально: Uptime Kuma в отдельном контейнере для health-check.
+- Uptime Kuma — отдельный контейнер, профиль `monitor`. UI только на localhost, наружу через туннель не публикуется.
+
+  ```bash
+  docker compose -p local_music -f infra/docker-compose.yml --profile monitor up -d
+  ```
+
+  Открой `http://127.0.0.1:3001` и при первом заходе задай пароль администратора (он остаётся в томе `uptime_kuma`, в git не попадает). Монитор: HTTP(s), URL `http://backend:8000/health`, ожидаемый ответ `{"status":"ok"}`. Этот адрес резолвится внутри сети compose, не с хоста.
 - Опционально: Loki + Promtail + Grafana — если захочется красивых дашбордов (вне MVP).
 
 ## Безопасность инфраструктуры

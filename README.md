@@ -84,7 +84,7 @@ docker compose -p local_music -f infra/docker-compose.yml --profile edge up -d -
 | 4.3 External imports | ✅ в `main` |
 | 5. Моя волна | ✅ в `main` — PR [#11](https://github.com/makoevvv/local_music/pull/11) |
 | 6. iOS | код в `main` — PR [#13](https://github.com/makoevvv/local_music/pull/13); установка на iPhone у владельца |
-| 7. Полировка | Caddy и туннель в `main` — PR [#14](https://github.com/makoevvv/local_music/pull/14); бэкапы по расписанию в этой ветке |
+| 7. Полировка | Caddy и туннель — PR [#14](https://github.com/makoevvv/local_music/pull/14); бэкапы — PR [#15](https://github.com/makoevvv/local_music/pull/15); Uptime Kuma в этой ветке |
 
 Детали по этапам: [`docs/12-roadmap.md`](docs/12-roadmap.md).
 
